@@ -1,4 +1,4 @@
-package com.ur.urcap.examples.driver.gripper.simplegripper;
+package de.hsel.ips.urcap.greifer;
 
 import com.ur.urcap.api.contribution.driver.general.tcp.TCPConfiguration;
 import com.ur.urcap.api.contribution.driver.general.userinput.CustomUserInputConfiguration;
