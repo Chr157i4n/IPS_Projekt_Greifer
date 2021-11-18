@@ -1,147 +1,41 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+#include "TMC2209.hpp"
+#include "RS485.hpp"
 
-#define END_MARKER '\n'
-
-const int ledPin =  13;  // Built-in LED
-const int EnTxPin = 7;  // HIGH:Transmitter, LOW:Receiver
-SoftwareSerial sSerial(3, 2); //1: rX 2: tX
-
-String buffer,buffer2;
-boolean ready = false;
-
-void sendAnswer(char command, String message);
-String readAnswer();
+RS485 rs485(3, 2, 7, 19200); //1: rX 2: tX
 
 
-void setReceving(){
-   digitalWrite(EnTxPin, LOW); 
-}
-
-void setTransmitting(){
-   digitalWrite(EnTxPin, HIGH); 
-}
-
-void ParseLine()
+void parseLine(String message)
 {
-  char command = buffer[0];
-  String message = buffer.substring(1);
+  char command = message[0];
+  message = message.substring(1);
 
   switch (toupper(command))
   {
       case 'T':
-          Serial.println((String) "test: "+message);
-          sendAnswer('a',"test");
+          rs485.sendAnswer("test back");
           break;
       case 'A':
-          Serial.println((String) "answer: "+message);
           break;
       case 'B':
           break;
+      case 'M':
+          int measuredValue = analogRead(A0);
+          rs485.sendAnswer((String) measuredValue);
+          break;
   }
-
-  buffer="";
-  sSerial.flush();
 }
 
-String sendMessage(String message){
-  setTransmitting();
-  
-  sSerial.print(message);
-  sSerial.print("\n"); //finish data packet
 
-  String answer = readAnswer();
-  delay(40);
-  return answer;
-}
-
-String sendCommand(char command, String message){
-  setTransmitting();
-  
-  sSerial.print(command);
-  sSerial.print(message);
-  sSerial.print("\n"); //finish data packet
-
-  String answer = readAnswer();
-  delay(40);
-  return answer;
-}
-
-String readCommand(){
-  setReceving();
-  buffer = "";
- 
-  while (sSerial.available())
-  {
-    char c = sSerial.read();
-    
-    if (c == END_MARKER)
-    {
-      buffer += '\0';
-      Serial.println((String) "got: "+buffer.length()+" : "+buffer);
-      ParseLine();
-    } else {
-      buffer += c;
-    }
-  }
-  return buffer;
-}
-
-void sendAnswer(char command, String message){
-  setTransmitting();
-  delay(10);
-
-  sSerial.print(command);
-  sSerial.print(message);
-  sSerial.print("\n"); //finish data packet
-}
-
-String readAnswer(){
-  setReceving();
-  //sSerial.flush();
-
-  while(!sSerial.available()) {
-    //Serial.println((String) "no data available");
-    }
-
-  return readCommand();
-}
 
 void setup() { 
-
   Serial.begin(115200);
-  sSerial.begin(19200);
-  pinMode(ledPin, OUTPUT);
-  pinMode(EnTxPin, OUTPUT);
-  digitalWrite(ledPin, LOW); 
-
-  Serial.println("Transmitter");
 } 
  
 void loop() 
 {   
-  
-  // String message = "test123";
-  // //Serial.println((String) "transmitting: "+message);
-
-  // sendCommand('m',message);
-  // sendCommand('t',message);
-  // delay(1000);
-
-  while (Serial.available())
-  {
-    char c = Serial.read();
-    
-    if (c == END_MARKER)
-    {
-      buffer2 += '\0';
-      //Serial.println((String) "got: "+buffer.length()+" : "+buffer);
-      Serial.println("nachricht: "+buffer2);
-      Serial.println((String)"antwort: "+sendMessage(buffer2));
-      buffer2 = "";
-    } else {
-      buffer2 += c;
-    }
+  String answer = rs485.readCommand();
+  if(answer != ""){
+    parseLine(answer);
   }
-  
 }
