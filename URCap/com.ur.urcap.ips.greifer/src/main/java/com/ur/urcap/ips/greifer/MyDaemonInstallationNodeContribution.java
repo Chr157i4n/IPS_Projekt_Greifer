@@ -43,8 +43,14 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Input(id = "btnDisableDaemon")
 	private InputButton disableDaemonButton;
 
+	@Input(id = "btnmeasurementValue")
+	private InputButton disableDaemonButton;
+
 	@Label(id = "lblDaemonStatus")
 	private LabelComponent daemonStatusLabel;
+
+	@Label(id = "lblmeasurementValue")
+	private LabelComponent measurementValueLabel;
 
 	@Input(id = POPUPTITLE_KEY)
 	public void onMessageChange(InputEvent event) {
@@ -66,6 +72,17 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			setDaemonEnabled(false);
 			applyDesiredDaemonStatus();
+		}
+	}
+
+	@Input(id = "btnmeasurementValue")
+	public void onMeasureClick(InputEvent event) {
+		
+		try {
+			String value = xmlRpcDaemonInterface.getMeasurementValue();
+			measurementValueLabel.setText(value);
+		} catch(Exception e){
+			System.err.println("Could not get a measurement value.");
 		}
 	}
 
