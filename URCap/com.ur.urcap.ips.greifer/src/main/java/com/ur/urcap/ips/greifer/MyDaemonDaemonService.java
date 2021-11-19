@@ -26,8 +26,7 @@ public class MyDaemonDaemonService implements DaemonService {
 	public URL getExecutable() {
 		try {
 			// Two equivalent example daemons are available:
-			return new URL("file:com/ur/urcap/ips/greifer/daemon/hello-world.py"); // Python executable
-			// return new URL("file:com/ur/urcap/examples/mydaemon/impl/daemon/HelloWorld"); // C++ executable
+			return new URL("file:com/ur/urcap/ips/greifer/daemon/IPS_Greifer_RS485_Deamon.py"); // Python executable
 		} catch (MalformedURLException e) {
 			return null;
 		}
