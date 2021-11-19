@@ -9,7 +9,8 @@ from SocketServer import ThreadingMixIn
 import serial
 
 title = ""
-ser = serial.Serial ("/dev/ttyTool", 19200)
+port = "/dev/ttyTool"
+ser = serial.Serial (port=port, baudrate=19200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=1.0, write_timeout=2.0,)
 
 def init():
 	
@@ -37,7 +38,9 @@ def get_measurement_value_test():
 	return 123
 
 def get_measurement_value():
-	return
+	serial.write("m123")
+	value = sio.readline()
+	return value[1:]
 
 
 sys.stdout.write("MyDaemon daemon started")
