@@ -26,6 +26,9 @@ def get_message(name):
 	else:
 		return "No name set"
 
+def get_measurement_value():
+	return 123
+
 
 sys.stdout.write("MyDaemon daemon started")
 sys.stderr.write("MyDaemon daemon started")
@@ -38,4 +41,5 @@ server.RequestHandlerClass.protocol_version = "HTTP/1.1"
 server.register_function(set_title, "set_title")
 server.register_function(get_title, "get_title")
 server.register_function(get_message, "get_message")
+server.register_function(get_measurement_value, "get_measurement_value")
 server.serve_forever()
