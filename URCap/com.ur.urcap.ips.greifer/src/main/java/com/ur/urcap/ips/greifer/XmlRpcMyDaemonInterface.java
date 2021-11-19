@@ -46,6 +46,20 @@ public class XmlRpcMyDaemonInterface {
 		return processString(result);
 	}
 
+	public String getMeasurementValueTest(String channel) throws XmlRpcException, UnknownResponseException {
+		ArrayList<String> args = new ArrayList<String>();
+		args.add(channel);
+		Object result = client.execute("get_measurement_value_test", args);
+		return processString(result);
+	}
+
+	public String getMeasurementValue(String channel) throws XmlRpcException, UnknownResponseException {
+		ArrayList<String> args = new ArrayList<String>();
+		args.add(channel);
+		Object result = client.execute("get_measurement_value", args);
+		return processString(result);
+	}
+
 	public String getMessage(String name) throws XmlRpcException, UnknownResponseException {
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(name);
