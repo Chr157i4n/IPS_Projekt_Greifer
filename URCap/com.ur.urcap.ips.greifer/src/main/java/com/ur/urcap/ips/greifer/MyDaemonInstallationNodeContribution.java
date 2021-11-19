@@ -30,7 +30,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	public MyDaemonInstallationNodeContribution(MyDaemonDaemonService daemonService, DataModel model) {
 		this.daemonService = daemonService;
 		this.model = model;
-		xmlRpcDaemonInterface = new XmlRpcMyDaemonInterface("127.0.0.1", 40404);
+		xmlRpcDaemonInterface = new XmlRpcMyDaemonInterface("127.0.0.1", 40405);
 		applyDesiredDaemonStatus();
 	}
 
@@ -129,7 +129,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 
 	@Override
 	public void generateScript(ScriptWriter writer) {
-		writer.globalVariable(XMLRPC_VARIABLE, "rpc_factory(\"xmlrpc\", \"http://127.0.0.1:40404/RPC2\")");
+		writer.globalVariable(XMLRPC_VARIABLE, "rpc_factory(\"xmlrpc\", \"http://127.0.0.1:40405/RPC2\")");
 		// Apply the settings to the daemon on program start in the Installation pre-amble
 		writer.appendLine(XMLRPC_VARIABLE + ".set_title(\"" + getPopupTitle() + "\")");
 	}
