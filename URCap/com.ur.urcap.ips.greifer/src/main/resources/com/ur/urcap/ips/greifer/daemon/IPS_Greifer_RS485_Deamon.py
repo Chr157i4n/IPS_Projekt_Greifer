@@ -1,4 +1,4 @@
-#!/usr/bin/env 
+#!/usr/bin/env python
 
 # RS485 device:  /dev/ttyTool
 
@@ -8,13 +8,26 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 import serial
 
+
+def log(message):
+	sys.stdout.write(message+"\n")
+	sys.stderr.write(message+"\n")
+	print(message+"\n")
+
+
 title = ""
 port = "/dev/ttyTool"
-ser = serial.Serial (port=port, baudrate=19200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=1.0, write_timeout=2.0,)
+
+counter = 0
+
+try:
+	ser = serial.Serial (port=port, baudrate=19200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=1.0, write_timeout=2.0,)
+except:
+	log("could not open port: "+port)
 
 def init():
+	pass
 	
-
 def set_title(new_title):
 	global title
 	title = new_title
@@ -34,17 +47,22 @@ def get_message(name):
 	else:
 		return "No name set"
 
-def get_measurement_value_test():
-	return 123
+def get_measurement_value_test(channel):
+	global counter
 
-def get_measurement_value():
-	serial.write("m123")
-	value = sio.readline()
-	return value[1:]
+	log("Test Measurement from channel: "+channel+" requested")
+	counter += 1
+	return str(counter)
 
+def get_measurement_value(channel):
+	log("Measurement from channel: "+channel+" requested")
+#	serial.write("m123")
+#	value = serial.readline()
+#	return value[1:]
+	pass
 
-sys.stdout.write("MyDaemon daemon started")
-sys.stderr.write("MyDaemon daemon started")
+log("MyDaemon daemon started")
+
 
 class MultithreadedSimpleXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
 	pass
