@@ -9,8 +9,14 @@ RS485::RS485(int pin_Tx, int pin_Rx, int pin_EnTxPin, int baudrate = 19200)
 
     pinMode(_pin_EnTxPin, OUTPUT);
 
+#if USE_HARWARE_SERIAL == 1
+    _sSerial = &Serial;
+#else
     _sSerial = new SoftwareSerial(_pin_Rx, _pin_Tx);
     _sSerial->begin(_baudrate);
+#endif
+
+    
 
     setReceving();
 }
@@ -49,7 +55,7 @@ String RS485::readAnswer()
 
 String RS485::readCommand()
 {
-    buffer = "";
+    
 
     while (_sSerial->available())
     {
@@ -58,8 +64,10 @@ String RS485::readCommand()
         if (c == endmarker)
         {
             buffer += '\0';
-            // Serial.println((String) "got: "+buffer.length()+" : "+buffer);
-            return buffer;
+            //Serial.println((String) "got: "+buffer.length()+" : "+buffer);
+            String tmpBuffer = buffer;
+            buffer = "";
+            return tmpBuffer;
         }
         else
         {
