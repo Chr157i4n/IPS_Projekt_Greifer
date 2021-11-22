@@ -3,6 +3,7 @@
 #include "RS485.hpp"
 
 RS485 rs485(3, 2, 7, 19200); //1: rX 2: tX
+TMC2209 tmc2209(5, 4, 10, 11, 12, 8, 19200);
 
 
 void parseLine(String message)
@@ -30,12 +31,23 @@ void parseLine(String message)
 
 void setup() { 
   Serial.begin(115200);
+
+  tmc2209.setMotorEnabled(true);
+  tmc2209.setDirection_pin(true);
+
+  for(int i=0; i<1000; i++){
+    tmc2209.makeAStep();
+    delay(10);
+  }
+
+  tmc2209.setMotorEnabled(false);
 } 
  
 void loop() 
 {   
-  String answer = rs485.readCommand();
-  if(answer != ""){
-    parseLine(answer);
-  }
+  // String answer = rs485.readCommand();
+  // if(answer != ""){
+  //   parseLine(answer);
+  // }
+
 }
