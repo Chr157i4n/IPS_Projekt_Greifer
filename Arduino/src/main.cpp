@@ -2,6 +2,13 @@
 #include "TMC2209.hpp"
 #include "RS485.hpp"
 
+/*
+* predefined chars for communication:
+* e = error
+* a = answer
+*/
+
+
 RS485 rs485(3, 2, 7, 19200); // 1: rX 2: tX
 TMC2209 tmc2209(5, 4, 10, 11, 12, 8, 19200);
 
@@ -12,13 +19,6 @@ void parseLine(String message)
 
   switch (toupper(command))
   {
-  case 'A':
-  {
-    int measuredValue = analogRead(14+message.toInt());
-    Serial.println(measuredValue);
-    rs485.sendAnswer((String)measuredValue);
-    break;
-  }
   case 'E':
   {
     Serial.println("ERROR");
@@ -26,7 +26,7 @@ void parseLine(String message)
   }
   case 'B':
   {
-    tmc2209.setMotorEnabled(message[0]);
+    tmc2209.setMotorEnabled(message.toInt());
     break;
   }
   case 'C':
@@ -39,9 +39,16 @@ void parseLine(String message)
     tmc2209.makeXSteps(message.toInt());
     break;
   }
+  case 'R':
+  {
+    int measuredValue = analogRead(14+message.toInt());
+    rs485.sendAnswer((String)measuredValue);
+    break;
+  }
   case 'T':
   {
-    rs485.sendAnswer("test back");
+    rs485.sendAnswer("RS485 test back");
+    Serial.println("Serial test back");
     break;
   }
   }

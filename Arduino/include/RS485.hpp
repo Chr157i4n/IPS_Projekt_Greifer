@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
+#define USE_HARWARE_SERIAL 0
+
 class RS485 
 {
   public:
@@ -41,7 +43,13 @@ class RS485
     
   private:
     int _pin_Tx = -1, _pin_Rx = -1, _pin_EnTxPin = -1, _baudrate = -1;
+    
+#if USE_HARWARE_SERIAL == 1
+    HardwareSerial *_sSerial = NULL;
+#else
     SoftwareSerial *_sSerial = NULL;
+#endif
+
     String buffer = "";
     char endmarker = '\n';
 };
