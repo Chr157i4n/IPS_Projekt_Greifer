@@ -17,18 +17,34 @@ TMC2209::TMC2209(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, 
 }
 
 void TMC2209::makeAStep(){
+    Serial.println((String)"Make one Step");
     digitalWrite(_pin_Step, HIGH);
-    delay(1);
+    delayMicroseconds(1);
     digitalWrite(_pin_Step, LOW);
-    delay(1);
+    delayMicroseconds(1);
+}
+
+void TMC2209::makeXSteps(int steps){
+
+    if(steps==0) return;
+
+    setDirection_pin(steps>0);
+
+    steps = abs(steps);
+
+    for(int i=0; i<steps; i++){
+        makeAStep();
+        delay(10);
+    }
 }
 
 void TMC2209::setMotorEnabled(bool en){
-    Serial.println((String)"Motor Enable: "+_pin_En);
+    Serial.println((String)"Motor Enable: "+_pin_En+" to "+en);
     digitalWrite(_pin_En, !en);
 }
 
 void TMC2209::setDirection_pin(bool dir){
+    Serial.println((String)"Motor Dir: "+_pin_Dir+" to "+dir);
     _direction = dir;
     digitalWrite(_pin_Dir, _direction);
 }

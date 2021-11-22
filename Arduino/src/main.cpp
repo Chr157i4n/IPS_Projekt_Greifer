@@ -2,9 +2,8 @@
 #include "TMC2209.hpp"
 #include "RS485.hpp"
 
-RS485 rs485(3, 2, 7, 19200); //1: rX 2: tX
+RS485 rs485(3, 2, 7, 19200); // 1: rX 2: tX
 TMC2209 tmc2209(5, 4, 10, 11, 12, 8, 19200);
-
 
 void parseLine(String message)
 {
@@ -13,41 +12,58 @@ void parseLine(String message)
 
   switch (toupper(command))
   {
-      case 'T':
-          rs485.sendAnswer("test back");
-          break;
-      case 'A':
-          break;
-      case 'B':
-          break;
-      case 'M':
-          int measuredValue = analogRead(A0);
-          rs485.sendAnswer((String) measuredValue);
-          break;
+  case 'A':
+  {
+    int measuredValue = analogRead(14+message.toInt());
+    Serial.println(measuredValue);
+    rs485.sendAnswer((String)measuredValue);
+    break;
+  }
+  case 'E':
+  {
+    Serial.println("ERROR");
+    break;
+  }
+  case 'B':
+  {
+    tmc2209.setMotorEnabled(message[0]);
+    break;
+  }
+  case 'C':
+  {
+    tmc2209.setDirection_pin(message.toInt());
+    break;
+  }
+  case 'D':
+  {
+    tmc2209.makeXSteps(message.toInt());
+    break;
+  }
+  case 'T':
+  {
+    rs485.sendAnswer("test back");
+    break;
+  }
   }
 }
 
-
-
-void setup() { 
+void setup()
+{
   Serial.begin(115200);
+  Serial.println("setup");
 
-  tmc2209.setMotorEnabled(true);
   tmc2209.setDirection_pin(true);
 
-  for(int i=0; i<1000; i++){
-    tmc2209.makeAStep();
-    delay(10);
+  
+
+  Serial.println("setup finished");
+}
+
+void loop()
+{
+  String answer = rs485.readCommand();
+  if (answer != "")
+  {
+    parseLine(answer);
   }
-
-  tmc2209.setMotorEnabled(false);
-} 
- 
-void loop() 
-{   
-  // String answer = rs485.readCommand();
-  // if(answer != ""){
-  //   parseLine(answer);
-  // }
-
 }

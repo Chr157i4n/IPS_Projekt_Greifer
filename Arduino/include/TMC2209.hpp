@@ -18,6 +18,8 @@ class TMC2209
 
     void makeAStep();
 
+    void makeXSteps(int steps);
+
     void setMotorEnabled(bool en);
 
     void setDirection_pin(bool dir);
