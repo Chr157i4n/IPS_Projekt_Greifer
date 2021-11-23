@@ -46,11 +46,17 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Input(id = "btnmeasurementValue")
 	private InputButton measurementValueButton;
 
+	@Input(id = "btnSendMessage")
+	private InputButton sendMessageButton;
+
 	@Label(id = "lblDaemonStatus")
 	private LabelComponent daemonStatusLabel;
 
 	@Label(id = "lblmeasurementValue")
 	private LabelComponent measurementValueLabel;
+
+	@Label(id = "lblSendMessage")
+	private LabelComponent sendMessageLabel;
 
 	@Input(id = POPUPTITLE_KEY)
 	public void onMessageChange(InputEvent event) {
@@ -87,11 +93,24 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
+	@Input(id = "btnSendMessage")
+	public void onMessageSendClick(InputEvent event) {
+		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
+			try {
+			//	String value = xmlRpcDaemonInterface.getSendMessage("channelTEST");
+			//	measurementValueLabel.setText(value);
+			} catch(Exception e){
+			//	System.err.println("Could not get a measurement value:\n"+e.toString());
+			}
+		}
+	}
+
 	@Override
 	public void openView() {
 		enableDaemonButton.setText("Start Daemon");
 		disableDaemonButton.setText("Stop daemon");
 		measurementValueButton.setText("Messen");
+		sendMessageButton.setText("Send Message");
 		popupTitleField.setText(getPopupTitle());
 
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
