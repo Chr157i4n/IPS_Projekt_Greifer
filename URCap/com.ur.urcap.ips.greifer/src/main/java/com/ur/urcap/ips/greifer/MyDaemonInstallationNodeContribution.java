@@ -52,6 +52,12 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Input(id = "btnSendMessage")
 	private InputButton sendMessageButton;
 
+	@Input(id = "btnMotorOn")
+	private InputButton motorOnButton;
+
+	@Input(id = "btnMotorOff")
+	private InputButton motorOffButton;
+
 	@Label(id = "lblDaemonStatus")
 	private LabelComponent daemonStatusLabel;
 
@@ -109,12 +115,38 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
+	@Input(id = "btnMotorOn")
+	public void onMessageSendClick(InputEvent event) {
+		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
+			try {
+				String value = xmlRpcDaemonInterface.sendMessage("b1");
+				sendMessageLabel.setText(value);
+			} catch(Exception e){
+				System.err.println("Error while sending message:\n"+e.toString());
+			}
+		}
+	}
+
+	@Input(id = "btnMotorOff")
+	public void onMessageSendClick(InputEvent event) {
+		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
+			try {
+				String value = xmlRpcDaemonInterface.sendMessage("b0");
+				sendMessageLabel.setText(value);
+			} catch(Exception e){
+				System.err.println("Error while sending message:\n"+e.toString());
+			}
+		}
+	}
+
 	@Override
 	public void openView() {
 		enableDaemonButton.setText("Start Daemon");
 		disableDaemonButton.setText("Stop daemon");
 		measurementValueButton.setText("Messen");
 		sendMessageButton.setText("Send Message");
+		motorOnButton.setText("Motor On");
+		motorOffButton.setText("Motor Off");
 		popupTitleField.setText(getPopupTitle());
 
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
