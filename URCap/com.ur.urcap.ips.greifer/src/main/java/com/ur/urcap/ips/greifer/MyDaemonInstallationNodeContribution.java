@@ -58,6 +58,9 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Label(id = "lblmeasurementValue")
 	private LabelComponent measurementValueLabel;
 
+	@Label(id = "lblSendMessage")
+	private LabelComponent sendMessageLabel;
+	
 
 	@Input(id = POPUPTITLE_KEY)
 	public void onMessageChange(InputEvent event) {
@@ -99,7 +102,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
 				String value = xmlRpcDaemonInterface.sendMessage(sendMessageTextField.getText());
-				measurementValueLabel.setText(value);
+				sendMessageLabel.setText(value);
 			} catch(Exception e){
 				System.err.println("Error while sending message:\n"+e.toString());
 			}
