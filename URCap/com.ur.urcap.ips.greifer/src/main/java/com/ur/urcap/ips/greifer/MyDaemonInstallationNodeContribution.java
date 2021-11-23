@@ -37,6 +37,9 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Input(id = POPUPTITLE_KEY)
 	private InputTextField popupTitleField;
 
+	@Input(id = "txtFldSendMessage")
+	private InputTextField sendMessageTextField;
+
 	@Input(id = "btnEnableDaemon")
 	private InputButton enableDaemonButton;
 
@@ -55,8 +58,6 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Label(id = "lblmeasurementValue")
 	private LabelComponent measurementValueLabel;
 
-	@Label(id = "lblSendMessage")
-	private LabelComponent sendMessageLabel;
 
 	@Input(id = POPUPTITLE_KEY)
 	public void onMessageChange(InputEvent event) {
@@ -97,10 +98,10 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	public void onMessageSendClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
-			//	String value = xmlRpcDaemonInterface.getSendMessage("channelTEST");
-			//	measurementValueLabel.setText(value);
+				String value = xmlRpcDaemonInterface.sendMessage(sendMessageTextField.getText());
+				measurementValueLabel.setText(value);
 			} catch(Exception e){
-			//	System.err.println("Could not get a measurement value:\n"+e.toString());
+				System.err.println("Error while sending message:\n"+e.toString());
 			}
 		}
 	}

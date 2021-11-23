@@ -8,6 +8,9 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 import serial
 
+import serial
+import time
+
 
 def log(message):
 	sys.stdout.write(message+"\n")
@@ -24,6 +27,7 @@ try:
 	ser = serial.Serial (port=port, baudrate=19200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=1.0, write_timeout=2.0,)
 except:
 	log("could not open port: "+port)
+	ser = None
 
 def init():
 	pass
@@ -47,11 +51,17 @@ def get_message(name):
 	else:
 		return "No name set"
 
-def get_send_message(mess):
-	if str(mess):
-		return "Message' " + str(mess) + "."
+def send_message(message):
+	if str(message):
+		if(ser==None):
+			return "back:"+message
+		else:
+			ser.reset_input_buffer()
+			ser.write((message+"\n").encode())
+			value = ser.readline()
+			return value
 	else:
-		return "No message set"
+		return "Error: No message set."
 
 def get_measurement_value_test(channel):
 	global counter
@@ -78,7 +88,7 @@ server.RequestHandlerClass.protocol_version = "HTTP/1.1"
 server.register_function(set_title, "set_title")
 server.register_function(get_title, "get_title")
 server.register_function(get_message, "get_message")
-server.register_function(get_send_message, "get_send_message")
+server.register_function(send_message, "send_message")
 server.register_function(get_measurement_value, "get_measurement_value")
 server.register_function(get_measurement_value_test, "get_measurement_value_test")
 server.serve_forever()

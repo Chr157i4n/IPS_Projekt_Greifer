@@ -53,10 +53,10 @@ public class XmlRpcMyDaemonInterface {
 		return processString(result);
 	}
 
-	public String getSendMessage(String channel) throws XmlRpcException, UnknownResponseException {
+	public String sendMessage(String message) throws XmlRpcException, UnknownResponseException {
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(channel);
-		Object result = client.execute("get_send_message", args);
+		args.add(message);
+		Object result = client.execute("send_message", args);
 		return processString(result);
 	}
 	
