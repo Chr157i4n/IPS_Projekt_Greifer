@@ -140,6 +140,9 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 			disableDaemonButton.setEnabled(false);
 		}
 
+		enableDaemonButton.setEnabled(true);
+		disableDaemonButton.setEnabled(true);
+
 		String text = "";
 		switch (state) {
 		case RUNNING:
