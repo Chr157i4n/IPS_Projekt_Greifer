@@ -116,7 +116,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	}
 
 	@Input(id = "btnMotorOn")
-	public void onMessageSendClick(InputEvent event) {
+	public void onMotorOnClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
 				String value = xmlRpcDaemonInterface.sendMessage("b1");
@@ -128,7 +128,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	}
 
 	@Input(id = "btnMotorOff")
-	public void onMessageSendClick(InputEvent event) {
+	public void onMotorOffClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
 				String value = xmlRpcDaemonInterface.sendMessage("b0");
