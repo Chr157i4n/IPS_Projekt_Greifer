@@ -6,9 +6,12 @@ import com.ur.urcap.api.domain.data.DataModel;
 import com.ur.urcap.api.domain.script.ScriptWriter;
 import com.ur.urcap.api.ui.annotation.Input;
 import com.ur.urcap.api.ui.annotation.Label;
+import com.ur.urcap.api.ui.annotation.Img;
 import com.ur.urcap.api.ui.component.InputEvent;
 import com.ur.urcap.api.ui.component.InputTextField;
 import com.ur.urcap.api.ui.component.LabelComponent;
+import com.ur.urcap.api.ui.component.ImgComponent;
+import javax.imageio.ImageIO;
 
 import java.awt.*;
 import java.util.Timer;
@@ -35,6 +38,10 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Label(id = "messagePreviewLabel")
 	private LabelComponent messagePreviewLabel;
 
+	@Img(id = "logo")
+	private ImgComponent logoImage;
+
+
 	@Input(id = "yourname")
 	public void onInput(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
@@ -43,9 +50,24 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		}
 	}
 
+
+	public void showPic(String s) {
+		String picName = s;
+	//	if (s == "0") {
+
+	//	}
+		try{
+			logoImage.setImage(ImageIO.read(getClass().getResource(picName)));
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		}		
+	}
+
 	@Override
 	public void openView() {
 		nameTextField.setText(getName());
+
+		showPic("logo.png");
 
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
 		uiTimer = new Timer(true);
@@ -72,6 +94,10 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		return "My Daemon: " + (model.isSet(NAME) ? getName() : "");
 	}
 
+	
+		
+	
+
 	@Override
 	public boolean isDefined() {
 		return getInstallation().isDefined() && !getName().isEmpty();
@@ -94,6 +120,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			// Provide a real-time preview of the daemon state
 			title = getInstallation().getXmlRpcDaemonInterface().getTitle();
 			message = getInstallation().getXmlRpcDaemonInterface().getMessage(getName());
+			//logoImg.setImage(ImageIO.read(getClass().getResource("icon.png")));
 		} catch (Exception e) {
 			System.err.println("Could not retrieve essential data from the daemon process for the preview.");
 			title = message = "<Daemon disconnected>";
