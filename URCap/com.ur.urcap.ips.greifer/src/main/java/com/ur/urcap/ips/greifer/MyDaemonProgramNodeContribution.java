@@ -115,7 +115,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		//writer.assign("mydaemon_title", getInstallation().getXMLRPCVariable() + ".get_title()");
 		//writer.appendLine("popup(mydaemon_message, mydaemon_title, False, False, blocking=True)");
 		
-		writer.assign("ips_greifer_command", commandTextField.getText());
+		writer.assign("ips_greifer_command", "\""+commandTextField.getText()+"\"");
 		writer.appendLine("returnValue = "+getInstallation().getXMLRPCVariable()+".send_message(ips_greifer_command)");
 		writer.appendLine("popup(returnValue, \"returnValue\", False, False, blocking=True)");
 
