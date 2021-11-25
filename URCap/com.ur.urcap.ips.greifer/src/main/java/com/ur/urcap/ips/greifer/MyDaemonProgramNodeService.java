@@ -19,7 +19,7 @@ public class MyDaemonProgramNodeService implements ProgramNodeService {
 
 	@Override
 	public String getTitle() {
-		return "My Daemon";
+		return "IPS Greifer";
 	}
 
 	@Override

@@ -32,6 +32,9 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Input(id = "yourname")
 	private InputTextField nameTextField;
 
+	@Input(id = "command")
+	private InputTextField commandTextField;
+
 	@Label(id = "titlePreviewLabel")
 	private LabelComponent titlePreviewLabel;
 
@@ -91,7 +94,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Override
 	public String getTitle() {
-		return "My Daemon: " + (model.isSet(NAME) ? getName() : "");
+		return "IPS Greifer"; //todo: open or close can be added later
 	}
 
 	
@@ -107,9 +110,16 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	public void generateScript(ScriptWriter writer) {
 		// Interact with the daemon process through XML-RPC calls
 		// Note, alternatively plain sockets can be used.
-		writer.assign("mydaemon_message", getInstallation().getXMLRPCVariable() + ".get_message(\"" + getName() + "\")");
-		writer.assign("mydaemon_title", getInstallation().getXMLRPCVariable() + ".get_title()");
-		writer.appendLine("popup(mydaemon_message, mydaemon_title, False, False, blocking=True)");
+		
+		//writer.assign("mydaemon_message", getInstallation().getXMLRPCVariable() + ".get_message(\"" + getName() + "\")");
+		//writer.assign("mydaemon_title", getInstallation().getXMLRPCVariable() + ".get_title()");
+		//writer.appendLine("popup(mydaemon_message, mydaemon_title, False, False, blocking=True)");
+		
+		writer.assign("ips_greifer_command", commandTextField.getText());
+		writer.appendLine("returnValue = "+getInstallation().getXMLRPCVariable()+".send_message(ips_greifer_command)");
+		writer.appendLine("popup(returnValue, \"returnValue\", False, False, blocking=True)");
+
+
 		writer.writeChildren();
 	}
 

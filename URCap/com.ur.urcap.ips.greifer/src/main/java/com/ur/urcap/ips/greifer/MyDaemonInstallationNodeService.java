@@ -23,7 +23,7 @@ public class MyDaemonInstallationNodeService implements InstallationNodeService 
 
 	@Override
 	public String getTitle() {
-		return "Mein Demon getTitle()";
+		return "IPS Greifer";
 	}
 
 	@Override
