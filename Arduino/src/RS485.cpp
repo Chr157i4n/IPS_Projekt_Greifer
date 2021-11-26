@@ -42,6 +42,20 @@ void RS485::sendAnswer(String message){
     sendMessage('a'+message);
 }
 
+void RS485::sendError(String message){
+    sendMessage('e'+message);
+}
+
+void RS485::flush()
+{
+    Serial.println("flushing RS485 Buffer");
+    while (_sSerial->available()>0)
+    {
+        _sSerial->read();
+    }
+    buffer="";
+}
+
 String RS485::readAnswer()
 {
     // _sSerial->flush();
@@ -64,10 +78,13 @@ String RS485::readCommand()
         if (c == endmarker)
         {
             buffer += '\0';
-            //Serial.println((String) "got: "+buffer.length()+" : "+buffer);
-            String tmpBuffer = buffer;
-            buffer = "";
-            return tmpBuffer;
+            Serial.println((String) "got: "+buffer.length()+" : "+buffer);
+            //String tmpBuffer = buffer;
+            //buffer = "";
+
+            Serial.println(buffer);
+            
+            return buffer;
         }
         else
         {

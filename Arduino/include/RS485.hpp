@@ -19,6 +19,10 @@ class RS485
 
     void sendAnswer(String message);
 
+    void sendError(String message);
+
+    void flush();
+
     String readAnswer(); //waits for an answer and then reads commands
 
     String readCommand();
