@@ -19,6 +19,7 @@ import java.util.TimerTask;
 
 public class MyDaemonProgramNodeContribution implements ProgramNodeContribution {
 	private static final String NAME = "name";
+	private static final String COMMAND = "r0";
 
 	private final DataModel model;
 	private final URCapAPI api;
@@ -49,6 +50,14 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	public void onInput(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			setName(nameTextField.getText());
+			updatePreview();
+		}
+	}
+
+	@Input(id = "command")
+	public void onInput(InputEvent event) {
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
+			setCommand(commandTextField.getText());
 			updatePreview();
 		}
 	}
@@ -115,8 +124,8 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		//writer.assign("mydaemon_title", getInstallation().getXMLRPCVariable() + ".get_title()");
 		//writer.appendLine("popup(mydaemon_message, mydaemon_title, False, False, blocking=True)");
 		
-		writer.assign("ips_greifer_command", "\""+commandTextField.getText()+"\"");
-		writer.appendLine("returnValue = "+getInstallation().getXMLRPCVariable()+".send_message(ips_greifer_command)");
+		writer.assign("ips_greifer_command", "\"" + getCommand() + "\"");
+		writer.appendLine("returnValue = " + getInstallation().getXMLRPCVariable() + ".send_message(ips_greifer_command)");
 		writer.appendLine("popup(returnValue, \"returnValue\", False, False, blocking=True)");
 
 
@@ -138,6 +147,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 		titlePreviewLabel.setText(title);
 		messagePreviewLabel.setText(message);
+		commandTextField.setText(getCommand());
 	}
 
 	private String getName() {
@@ -149,6 +159,18 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			model.remove(NAME);
 		}else{
 			model.set(NAME, name);
+		}
+	}
+
+		private String getCommand() {
+		return model.get(COMMAND, "");
+	}
+
+	private void setCommand(String command) {
+		if ("".equals(command)){
+			model.remove(COMMAND);
+		}else{
+			model.set(COMMAND, command);
 		}
 	}
 
