@@ -42,6 +42,8 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Label(id = "messagePreviewLabel")
 	private LabelComponent messagePreviewLabel;
 
+
+
 	@Img(id = "logo")
 	private ImgComponent logoImage;
 
@@ -78,6 +80,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Override
 	public void openView() {
 		nameTextField.setText(getName());
+		commandTextField.setText(getCommand());
 
 		showPic("logo.png");
 
@@ -147,7 +150,6 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 		titlePreviewLabel.setText(title);
 		messagePreviewLabel.setText(message);
-		commandTextField.setText(getCommand());
 	}
 
 	private String getName() {
