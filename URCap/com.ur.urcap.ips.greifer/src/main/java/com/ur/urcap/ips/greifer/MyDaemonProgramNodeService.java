@@ -35,7 +35,7 @@ public class MyDaemonProgramNodeService implements ProgramNodeService {
 
 	@Override
 	public boolean isChildrenAllowed() {
-		return true;
+		return false;
 	}
 
 	@Override

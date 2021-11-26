@@ -103,7 +103,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Override
 	public boolean isDefined() {
-		return getInstallation().isDefined() && !getName().isEmpty();
+		return getInstallation().isDefined();// && !getName().isEmpty();
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		writer.appendLine("popup(returnValue, \"returnValue\", False, False, blocking=True)");
 
 
-		writer.writeChildren();
+		//writer.writeChildren();
 	}
 
 	private void updatePreview() {
