@@ -54,10 +54,10 @@ def get_message(name):
 def send_message(message):
 	if str(message):
 		if(ser==None):
-			return "back:"+message
+			return "back: " + message
 		else:
 			ser.reset_input_buffer()
-			ser.write((message+"\n").encode())
+			ser.write((message + "\n").encode())
 			value = ser.readline()
 			return value
 	else:

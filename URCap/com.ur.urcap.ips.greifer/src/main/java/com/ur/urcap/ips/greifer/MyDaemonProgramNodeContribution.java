@@ -57,7 +57,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	}
 
 	@Input(id = "command")
-	public void onInput(InputEvent event) {
+	public void onCommandInput(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			setCommand(commandTextField.getText());
 			updatePreview();
@@ -164,7 +164,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		}
 	}
 
-		private String getCommand() {
+	private String getCommand() {
 		return model.get(COMMAND, "");
 	}
 
