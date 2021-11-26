@@ -14,7 +14,7 @@ public class MyDaemonProgramNodeService implements ProgramNodeService {
 
 	@Override
 	public String getId() {
-		return "MyDaemonNode";
+		return "ips_greifer";
 	}
 
 	@Override

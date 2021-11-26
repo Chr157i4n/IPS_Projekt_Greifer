@@ -201,7 +201,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	}
 
 	public boolean isDefined() {
-		return !getPopupTitle().isEmpty() && getDaemonState() == DaemonContribution.State.RUNNING;
+		return getDaemonState() == DaemonContribution.State.RUNNING;
 	}
 
 	@Override
