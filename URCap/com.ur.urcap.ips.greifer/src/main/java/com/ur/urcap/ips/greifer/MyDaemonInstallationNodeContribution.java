@@ -201,7 +201,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	}
 
 	public boolean isDefined() {
-		return getDaemonState() == DaemonContribution.State.RUNNING;
+		return true;//getDaemonState() == DaemonContribution.State.RUNNING;
 	}
 
 	@Override
