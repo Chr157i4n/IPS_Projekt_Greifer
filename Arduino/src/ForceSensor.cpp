@@ -15,6 +15,7 @@ float ForceSensor::getValue()
     //Serial.print("\n");
     //delay(100); // Change this if you are getting values too quickly
     float force = (float(data)-255)/512*450;
+    force = force/FORCE_LEVER_RATIO;
 
     return force;
 }

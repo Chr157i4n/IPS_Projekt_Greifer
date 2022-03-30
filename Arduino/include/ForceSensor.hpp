@@ -23,6 +23,9 @@
  * September 2016
  * ----------------------------------------------------------------------------- */
 
+
+#define FORCE_LEVER_RATIO 2.16667
+
 class ForceSensor
 {
 public:
