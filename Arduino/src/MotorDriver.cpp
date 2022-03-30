@@ -1,7 +1,7 @@
-#include "TMC2209.hpp"
+#include "MotorDriver.hpp"
 
 
-TMC2209::TMC2209(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, int pin_StallGuard, int baudrate){
+MotorDriver::MotorDriver(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, int pin_StallGuard, int baudrate){
     _pin_Tx = pin_Tx;
     _pin_Rx = pin_Rx;
     _pin_Step = pin_Step;
@@ -19,7 +19,7 @@ TMC2209::TMC2209(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, 
     pinMode(_pin_StallGuard, INPUT);
 }
 
-void TMC2209::makeAStep(){
+void MotorDriver::makeAStep(){
     //Serial.println((String)"Make one Step");
     digitalWrite(_pin_Step, HIGH);
     delayMicroseconds(10);
@@ -27,7 +27,7 @@ void TMC2209::makeAStep(){
     delayMicroseconds(10);
 }
 
-void TMC2209::makeXSteps(int steps){
+void MotorDriver::makeXSteps(int steps){
 
     if(steps==0) return;
 
@@ -41,19 +41,19 @@ void TMC2209::makeXSteps(int steps){
     }
 }
 
-void TMC2209::setMotorEnabled(bool en){
+void MotorDriver::setMotorEnabled(bool en){
     Serial.println((String)"Motor Enable: "+_pin_En+" to "+!en);
     digitalWrite(_pin_En, !en);
 }
 
-void TMC2209::setDirection_pin(bool dir){
+void MotorDriver::setDirection_pin(bool dir){
     Serial.println((String)"Motor Dir: "+_pin_Dir+" to "+dir);
     _direction = dir;
     digitalWrite(_pin_Dir, _direction);
     delay(10);
 }
 
-void TMC2209::reverseDirection_pin(){
+void MotorDriver::reverseDirection_pin(){
     _direction = !_direction;
     digitalWrite(_pin_Dir, _direction);
 }

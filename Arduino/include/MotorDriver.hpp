@@ -6,7 +6,7 @@
 *
 */
 
-class TMC2209 
+class MotorDriver 
 {
   public:
 
@@ -14,7 +14,7 @@ class TMC2209
     * constructor of the class
     * the number of the pins for tx and rx is needed as parameter
     */
-    TMC2209(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, int pin_StallGuard, int baudrate);
+    MotorDriver(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, int pin_StallGuard, int baudrate);
 
     void makeAStep();
 
