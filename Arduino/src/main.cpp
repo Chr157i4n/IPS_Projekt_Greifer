@@ -1,6 +1,7 @@
 #include <Arduino.h>
-#include "TMC2209.hpp"
+#include "MotorDriver.hpp"
 #include "RS485.hpp"
+#include "ForceSensor.hpp"
 
 /*
 * predefined chars for communication:
@@ -10,7 +11,8 @@
 
 
 RS485 rs485(2, 3, 7, 19200); // 1: rX 2: tX
-TMC2209 tmc2209(5, 4, 10, 11, 12, 8, 19200);
+MotorDriver motorDriver(5, 4, 10, 11, 12, 8, 19200);
+ForceSensor forceSensor();
 
 void parseLine(String message)
 {
@@ -28,7 +30,7 @@ void parseLine(String message)
   }
   case 'B':
   {
-    tmc2209.setMotorEnabled(message.toInt());
+    motorDriver.setMotorEnabled(message.toInt());
     if(message.toInt()==1){
       rs485.sendAnswer((String)"motor_enabled");
     } else {
@@ -38,12 +40,12 @@ void parseLine(String message)
   }
   case 'C':
   {
-    tmc2209.setDirection_pin(message.toInt());
+    motorDriver.setDirection_pin(message.toInt());
     break;
   }
   case 'D':
   {
-    tmc2209.makeXSteps(message.toInt());
+    motorDriver.makeXSteps(message.toInt());
     rs485.sendAnswer((String)"motor_move");
     break;
   }
@@ -75,7 +77,7 @@ void setup()
   Serial.begin(115200);
   Serial.println("setup");
 
-  tmc2209.setDirection_pin(true);
+  motorDriver.setDirection_pin(true);
 
   
 
