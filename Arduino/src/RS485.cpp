@@ -39,16 +39,16 @@ String RS485::sendCommand(char command, String message)
 }
 
 void RS485::sendAnswer(String message){
-    sendMessage('a'+message);
+    sendMessage('A'+message);
 }
 
 void RS485::sendError(String message){
-    sendMessage('e'+message);
+    sendMessage('E'+message);
 }
 
 void RS485::flush()
 {
-    Serial.println("flushing RS485 Buffer");
+    //Serial.println("flushing RS485 Buffer");
     while (_sSerial->available()>0)
     {
         _sSerial->read();

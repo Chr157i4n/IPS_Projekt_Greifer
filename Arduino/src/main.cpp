@@ -3,70 +3,85 @@
 #include "RS485.hpp"
 #include "ForceSensor.hpp"
 
+#define COMM_DELIMITER ' '
+
 /*
-* predefined chars for communication:
-* e = error
-* a = answer
+* G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
+* G28   -   Move to Origin (Home)
+*
+* M17   -   Enable Motor Output
+* M18   -   Disable Motor Output
+* M42   -   Switch I/O pin
+* M43   -   Read I/O pin
+* M113  -   Host Keepalive
+* M226  -   Wait for pin state
 */
 
 
 RS485 rs485(2, 3, 7, 19200); // 1: rX 2: tX
-MotorDriver motorDriver(5, 4, 10, 11, 12, 8, 19200);
+MotorDriver motorDriver(5, 4, 10, 11, 12, 8, 115200);
 ForceSensor forceSensor();
 
 void parseLine(String message)
 {
   Serial.println((String)"Parsing Line: "+message);
+  
+  int index_command_end = message.indexOf(COMM_DELIMITER);
+  String command = "", parameters = "";
 
-  char command = message[0];
-  message = message.substring(1);
+  if(index_command_end>0){
+    command = message.substring(0,index_command_end);
+    parameters = message.substring(index_command_end);
+  } else {
+    command = message;
+  }
 
-  switch (toupper(command))
+
+  if(command == "G0") // drive Motor
   {
-  case 'E':
-  {
-    Serial.println("ERROR");
-    break;
-  }
-  case 'B':
-  {
-    motorDriver.setMotorEnabled(message.toInt());
-    if(message.toInt()==1){
-      rs485.sendAnswer((String)"motor_enabled");
-    } else {
-      rs485.sendAnswer((String)"motor_disabled");
-    }
-    break;
-  }
-  case 'C':
-  {
-    motorDriver.setDirection_pin(message.toInt());
-    break;
-  }
-  case 'D':
-  {
-    motorDriver.makeXSteps(message.toInt());
+    int index_X = parameters.indexOf('X');
+    int index_X_end = parameters.indexOf(' ', index_X);
+    String move_amount = parameters.substring(index_X+1, index_X_end);
+    motorDriver.makeXSteps(move_amount.toInt());
     rs485.sendAnswer((String)"motor_move");
-    break;
   }
-  case 'R':
+  else if(command == "M17") // enable Motor Output
   {
-    int measuredValue = analogRead(14+message.toInt());
-    rs485.sendAnswer((String)measuredValue);
-    break;
+    motorDriver.setMotorEnabled(true);
+    rs485.sendAnswer((String)"motor_enabled");
   }
-  case 'T':
+  else if(command == "M18") // disable Motor Output
   {
-    rs485.sendAnswer("RS485 test back");
-    Serial.println("Serial test back");
-    break;
+    motorDriver.setMotorEnabled(false);
+    rs485.sendAnswer((String)"motor_disabled");
   }
-  default:
+  else if(command == "M42") // Switch I/O pin
+  {
+    int index_P = parameters.indexOf('P');
+    int index_P_end = parameters.indexOf(' ', index_P);
+    String pin = parameters.substring(index_P+1, index_P_end);
+
+    int index_S = parameters.indexOf('S');
+    int index_S_end = parameters.indexOf(' ', index_S);
+    String state = parameters.substring(index_S+1, index_S_end);
+
+    digitalWrite(pin.toInt(), state.toInt());
+    rs485.sendAnswer((String)"pin_switched");
+  }
+  else if(command == "M43") // Read I/O pin
+  {
+    int index_P = parameters.indexOf('P');
+    int index_P_end = parameters.indexOf(' ', index_P);
+    String pin = parameters.substring(index_P+1, index_P_end);
+
+    bool state = digitalRead(pin.toInt());
+    rs485.sendAnswer((String)state);
+    Serial.println((String)"A"+state);
+  }
+  else
   {
     rs485.sendError("command_not_available");
     Serial.println("Command not available");
-    break;
-  }
   }
 
   rs485.flush();
@@ -94,4 +109,6 @@ void loop()
     parseLine(answer);
     rs485.flush();
   }
+  //("M43 P10");
+  //delay(1000);
 }

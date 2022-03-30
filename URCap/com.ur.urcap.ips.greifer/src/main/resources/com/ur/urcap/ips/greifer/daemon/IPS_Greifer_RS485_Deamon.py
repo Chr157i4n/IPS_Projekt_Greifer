@@ -24,7 +24,7 @@ port = "/dev/ttyTool"
 counter = 0
 
 try:
-	ser = serial.Serial (port=port, baudrate=19200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=1.0, write_timeout=2.0,)
+	ser = serial.Serial (port=port, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=1.0, write_timeout=2.0,)
 except:
 	log("could not open port: "+port)
 	ser = None
@@ -72,7 +72,7 @@ def get_measurement_value_test(channel):
 
 def get_measurement_value(channel):
 	log("Measurement from channel: "+channel+" requested")
-#	serial.write("m123")
+#	serial.write("M43 P"+str(channel))
 #	value = serial.readline()
 #	return value[1:]
 	pass
