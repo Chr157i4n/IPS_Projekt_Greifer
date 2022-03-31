@@ -119,7 +119,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	public void onMotorOnClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
-				String value = xmlRpcDaemonInterface.sendMessage("b1");
+				String value = xmlRpcDaemonInterface.sendMessage("M17");
 				sendMessageLabel.setText(value);
 			} catch(Exception e){
 				System.err.println("Error while sending message:\n"+e.toString());
@@ -131,7 +131,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	public void onMotorOffClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
-				String value = xmlRpcDaemonInterface.sendMessage("b0");
+				String value = xmlRpcDaemonInterface.sendMessage("M18");
 				sendMessageLabel.setText(value);
 			} catch(Exception e){
 				System.err.println("Error while sending message:\n"+e.toString());
@@ -141,6 +141,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 
 	@Override
 	public void openView() {
+		System.out.println("Open View 1");
 		enableDaemonButton.setText("Start Daemon");
 		disableDaemonButton.setText("Stop daemon");
 		measurementValueButton.setText("Messen");
@@ -162,10 +163,12 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 				});
 			}
 		}, 0, 1000);
+		System.out.println("Open View 2");
 	}
 
 	private void updateUI() {
-		DaemonContribution.State state = getDaemonState();
+		System.out.println("Update UI 1");
+		DaemonContribution.State state = DaemonContribution.State.RUNNING;//getDaemonState();
 
 		if (state == DaemonContribution.State.RUNNING) {
 			enableDaemonButton.setEnabled(false);
@@ -191,6 +194,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 			break;
 		}
 		daemonStatusLabel.setText(text);
+		System.out.println("Update UI 2");
 	}
 
 	@Override

@@ -7,8 +7,6 @@ import sys
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 import serial
-
-import serial
 import time
 
 

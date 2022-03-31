@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>MyDaemon</title>
+		<title>IPS_Greifer</title>
 		<style>
-			input {
+			select {
 				display: inline-block;
 				width: 200px;
 				height: 28px;
@@ -37,15 +37,32 @@
 		<form>
 			<!-- <img id="logo"/> -->
 
-			<p>This program node will open a popup on execution.</p><br \>
-			<label>Enter your name:</label> <input id="yourname" type="text"/>
 			<br/>
-			<div id="preview">
-				<h3 id="header">Preview</h3><br \>
-				Title: <label id="titlePreviewLabel" style="width: 400px;"/> <br \>
-				Message: <label id="messagePreviewLabel" style="width: 400px;"/>
+			<div id="command_div">
+				<h3 id="command_header">Befehl</h3><br \>
+
+				<div>
+					<input type="radio" id="command_Choice1" name="command" value="custom_command">
+					 <label>Befehl:</label>
+					 <input id="custom_command_TextInput" type="text" style="width: 200px; height: 28px;"/>
+					 <br/>
+				
+					<input type="radio" id="command_Choice2" name="command" value="motor_power">
+					 <label>Motor Power:</label>
+					 <select id="motor_power_Select" style="width: 200px; height: 28px;">
+						<option>Dropdown list will be empty, because Option does not work</option>
+					  </select>
+					 <br/>
+
+					<input type="radio" id="command_Choice3" name="command" value="motor_drive">
+					 <label>Motor um</label>
+					 <input id="motor_drive_NumberInput" type="number" step="1" style="width: 200px; height: 28px;"/>
+					 <label>Schritte verfahren</label>
+					 <br/>
+				</div>
+
 			</div>
-			<label>Befehl:</label> <input id="command" type="text"/>
+			
 		</form>
 
 		
