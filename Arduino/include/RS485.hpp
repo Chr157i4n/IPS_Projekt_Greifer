@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-#define USE_HARWARE_SERIAL 0
+#define USE_HARWARE_SERIAL 1
 
 class RS485 
 {
@@ -11,7 +11,7 @@ class RS485
     * constructor of the class
     * the number of the pins for tx and rx is needed as parameter
     */
-    RS485(int pin_Tx, int pin_Rx, int pin_EnTxPin, int baudrate);
+    RS485(int pin_EnTxPin, int baudrate = 19200, int pin_Tx = -1, int pin_Rx = -1);
 
     void sendMessage(String message);
 
@@ -20,6 +20,10 @@ class RS485
     void sendAnswer(String message);
 
     void sendError(String message);
+
+    void sendKeepAlive(){
+        sendMessage("M113");
+    }
 
     void flush();
 

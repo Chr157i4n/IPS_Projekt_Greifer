@@ -4,6 +4,7 @@
 #include "ForceSensor.hpp"
 
 #define COMM_DELIMITER ' '
+//#define DEBUG
 
 /*
 * G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
@@ -12,15 +13,34 @@
 * M17   -   Enable Motor Output
 * M18   -   Disable Motor Output
 * M42   -   Switch I/O pin
+* M44   -   Read Sensor value
 * M43   -   Read I/O pin
 * M113  -   Host Keepalive
 * M226  -   Wait for pin state
 */
 
+RS485 rs485(9, 115200);
+MotorDriver motorDriver(11, 13, 12);
+ForceSensor forceSensor;
 
-RS485 rs485(2, 3, 7, 19200); // 1: rX 2: tX
-MotorDriver motorDriver(5, 4, 10, 11, 12, 8, 115200);
-ForceSensor forceSensor();
+unsigned int currentTime = 0;
+unsigned int lastKeepAlive = 0;
+
+float clamp(int force){
+  lastKeepAlive = millis();
+  motorDriver.setDirection_pin(true);
+  float currentForce = forceSensor.getValue();
+  while(currentForce < force){
+    if(millis() > lastKeepAlive+1000){
+      rs485.sendKeepAlive();
+      lastKeepAlive = millis();
+    }
+    motorDriver.makeAStep();
+    delay(10);
+    currentForce = forceSensor.getValue();
+  }
+  return currentForce;
+}
 
 void parseLine(String message)
 {
@@ -33,17 +53,36 @@ void parseLine(String message)
     command = message.substring(0,index_command_end);
     parameters = message.substring(index_command_end);
   } else {
-    command = message;
+    command = message.substring(0,message.length()-1);
   }
 
+  //Serial.println((String)"command: "+command);
 
   if(command == "G0") // drive Motor
   {
     int index_X = parameters.indexOf('X');
-    int index_X_end = parameters.indexOf(' ', index_X);
-    String move_amount = parameters.substring(index_X+1, index_X_end);
-    motorDriver.makeXSteps(move_amount.toInt());
-    rs485.sendAnswer((String)"motor_move");
+    int index_S = parameters.indexOf('S');
+    int index_F = parameters.indexOf('F');
+    if(index_X>=0){
+      int index_X_end = parameters.indexOf(' ', index_X);
+      String move_amount_mm = parameters.substring(index_X+1, index_X_end);
+      motorDriver.makeXSteps(move_amount_mm.toInt());
+      rs485.sendAnswer((String)"motor_move_mm");
+    }else if(index_S>=0){
+      int index_S_end = parameters.indexOf(' ', index_S);
+      String move_amount_steps = parameters.substring(index_S+1, index_S_end);
+      motorDriver.makeXSteps(move_amount_steps.toInt());
+      rs485.sendAnswer((String)"motor_move_steps");
+    }else if(index_F>=0){
+      int index_F_end = parameters.indexOf(' ', index_F);
+      String move_amount_force = parameters.substring(index_F+1, index_F_end);
+      float actual_force = clamp(move_amount_force.toInt());
+      rs485.sendAnswer((String)actual_force);
+    }
+  }
+  else if(command == "M1337") // Test
+  {
+    rs485.sendAnswer((String)"leet");
   }
   else if(command == "M17") // enable Motor Output
   {
@@ -76,12 +115,24 @@ void parseLine(String message)
 
     bool state = digitalRead(pin.toInt());
     rs485.sendAnswer((String)state);
-    Serial.println((String)"A"+state);
+    //Serial.println((String)"A"+state);
+  }
+  else if(command == "M44") // Read Sensor value
+  {
+    int index_S = parameters.indexOf('S');
+    int index_S_end = parameters.indexOf(' ', index_S);
+    String sensor = parameters.substring(index_S+1, index_S_end);
+    float value = -1;
+    if(sensor.toInt() == 1){
+      value = forceSensor.getValue();
+    }
+    rs485.sendAnswer((String)value);
+    //Serial.println((String)"A"+state);
   }
   else
   {
     rs485.sendError("command_not_available");
-    Serial.println("Command not available");
+    //Serial.println("Command not available");
   }
 
   rs485.flush();
@@ -90,13 +141,16 @@ void parseLine(String message)
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("setup");
+  Serial.setTimeout(2000);
+  Serial.println("---");
+
+  currentTime = millis();
+  lastKeepAlive = millis();
+
+  Wire.begin();
+  pinMode(LED_BUILTIN, OUTPUT);
 
   motorDriver.setDirection_pin(true);
-
-  
-
-  Serial.println("setup finished");
 }
 
 void loop()
@@ -104,11 +158,12 @@ void loop()
   String answer = rs485.readCommand();
   if (answer.length()>0)
   {
-    //Serial.println((String)"Message: "+answer);
-    rs485.flush();
+    digitalWrite(LED_BUILTIN, HIGH);
+    #ifdef DEBUG
+    Serial.println((String)"Message: "+answer);
+    #endif
     parseLine(answer);
-    rs485.flush();
+    digitalWrite(LED_BUILTIN, LOW);
   }
-  //("M43 P10");
-  //delay(1000);
+  delay(1);
 }

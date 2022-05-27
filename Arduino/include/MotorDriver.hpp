@@ -14,7 +14,7 @@ class MotorDriver
     * constructor of the class
     * the number of the pins for tx and rx is needed as parameter
     */
-    MotorDriver(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, int pin_StallGuard, int baudrate);
+    MotorDriver(int pin_Step, int pin_Dir, int pin_En);
 
     void makeAStep();
 
@@ -27,7 +27,6 @@ class MotorDriver
     void reverseDirection_pin();
     
   private:
-    int _pin_Tx = -1, _pin_Rx = -1, _pin_Step = -1, _pin_Dir = -1, _pin_En = -1, _pin_StallGuard = -1;
-    int _baudrate = 19200;
+    int _pin_Step = -1, _pin_Dir = -1, _pin_En = -1;
     bool _direction = true;
 };

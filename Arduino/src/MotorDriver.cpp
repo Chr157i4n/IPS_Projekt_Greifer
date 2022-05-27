@@ -1,14 +1,10 @@
 #include "MotorDriver.hpp"
 
 
-MotorDriver::MotorDriver(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int pin_En, int pin_StallGuard, int baudrate){
-    _pin_Tx = pin_Tx;
-    _pin_Rx = pin_Rx;
+MotorDriver::MotorDriver(int pin_Step, int pin_Dir, int pin_En){
     _pin_Step = pin_Step;
     _pin_Dir = pin_Dir;
     _pin_En = pin_En;
-    _pin_StallGuard = pin_StallGuard;
-    _baudrate = baudrate;
 
     setMotorEnabled(false);
     pinMode(_pin_En, OUTPUT);
@@ -16,15 +12,14 @@ MotorDriver::MotorDriver(int pin_Tx, int pin_Rx, int pin_Step, int pin_Dir, int 
 
     pinMode(_pin_Step, OUTPUT);
     pinMode(_pin_Dir, OUTPUT);
-    pinMode(_pin_StallGuard, INPUT);
 }
 
 void MotorDriver::makeAStep(){
-    //Serial.println((String)"Make one Step");
+    Serial.println((String)"Make one Step");
     digitalWrite(_pin_Step, HIGH);
-    delayMicroseconds(10);
+    delayMicroseconds(500);
     digitalWrite(_pin_Step, LOW);
-    delayMicroseconds(10);
+    delayMicroseconds(500);
 }
 
 void MotorDriver::makeXSteps(int steps){

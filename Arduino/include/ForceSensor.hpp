@@ -26,17 +26,19 @@
 
 #define FORCE_LEVER_RATIO 2.16667
 
+
 class ForceSensor
 {
 public:
     /*
      * constructor of the class
      */
-    ForceSensor();
+    ForceSensor(short address = 0x04);
 
     float getValue(); // reads the sensor value, return the force in Newton
 
-    short readDataFromSensor(short address);
+    short readDataFromSensor();
 
 private:
+    short i2cAddress = 0;
 };
