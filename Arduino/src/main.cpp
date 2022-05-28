@@ -5,9 +5,13 @@
 
 #define COMM_DELIMITER ' '
 //#define DEBUG
+#define ENDSTOP_PIN 8
+#define SPINDLE_PITCH 1.5
 
 /*
 * G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
+* G2    -   close (specify clamping force with Fxx)
+* G3    -   clamp
 * G28   -   Move to Origin (Home)
 *
 * M17   -   Enable Motor Output
@@ -23,23 +27,58 @@ RS485 rs485(9, 115200);
 MotorDriver motorDriver(11, 13, 12);
 ForceSensor forceSensor;
 
-unsigned int currentTime = 0;
-unsigned int lastKeepAlive = 0;
-
-float clamp(int force){
-  lastKeepAlive = millis();
+float close(int force){
   motorDriver.setDirection_pin(true);
   float currentForce = forceSensor.getValue();
   while(currentForce < force){
-    if(millis() > lastKeepAlive+1000){
-      rs485.sendKeepAlive();
-      lastKeepAlive = millis();
-    }
+    rs485.keepAlive();
     motorDriver.makeAStep();
-    delay(10);
+    delay(1);
     currentForce = forceSensor.getValue();
   }
   return currentForce;
+}
+
+float open(int force = 10, int steps_afterwards=200){
+  motorDriver.setDirection_pin(false);
+  float currentForce = forceSensor.getValue();
+  while(currentForce > force){
+    rs485.keepAlive();
+    motorDriver.makeAStep();
+    delay(1);
+    currentForce = forceSensor.getValue();
+  }
+  for(int i=0; i<steps_afterwards; i++){
+    rs485.keepAlive();
+    motorDriver.makeAStep();
+    delay(1);
+  }
+  currentForce = forceSensor.getValue();
+  return currentForce;
+}
+
+int move(int steps){
+  if(steps==0) return 0;
+  motorDriver.setDirection_pin(steps>0);
+  steps = abs(steps);
+  for(int i=0; i<steps; i++){
+    rs485.keepAlive();
+    motorDriver.makeAStep();
+    delay(1);
+  }
+  return steps;
+}
+
+int home(){
+  bool endstop_state = digitalRead(ENDSTOP_PIN);
+    while(endstop_state){
+      rs485.keepAlive();
+      motorDriver.makeAStep();
+      delay(1);
+      endstop_state = digitalRead(ENDSTOP_PIN);
+      //Serial.println((String)"Pinstate: "+endstop_state);
+  }
+  return 0;
 }
 
 void parseLine(String message)
@@ -62,25 +101,33 @@ void parseLine(String message)
   {
     int index_X = parameters.indexOf('X');
     int index_S = parameters.indexOf('S');
-    int index_F = parameters.indexOf('F');
     if(index_X>=0){
       int index_X_end = parameters.indexOf(' ', index_X);
       String move_amount_mm = parameters.substring(index_X+1, index_X_end);
-      motorDriver.makeXSteps(move_amount_mm.toInt());
-      rs485.sendAnswer((String)"motor_move_mm");
+      int steps = move(round(move_amount_mm.toInt()*200/SPINDLE_PITCH));
+      rs485.sendAnswer((String)steps);
     }else if(index_S>=0){
       int index_S_end = parameters.indexOf(' ', index_S);
       String move_amount_steps = parameters.substring(index_S+1, index_S_end);
-      motorDriver.makeXSteps(move_amount_steps.toInt());
-      rs485.sendAnswer((String)"motor_move_steps");
-    }else if(index_F>=0){
-      int index_F_end = parameters.indexOf(' ', index_F);
-      String move_amount_force = parameters.substring(index_F+1, index_F_end);
-      float actual_force = clamp(move_amount_force.toInt());
-      rs485.sendAnswer((String)actual_force);
+      int steps = move(move_amount_steps.toInt());
+      rs485.sendAnswer((String)steps);
     }
-  }
-  else if(command == "M1337") // Test
+  }else if(command == "G2") // close
+  {
+    int index_F = parameters.indexOf('F');
+    int index_F_end = parameters.indexOf(' ', index_F);
+    String move_amount_force = parameters.substring(index_F+1, index_F_end);
+    float actual_force = close(move_amount_force.toInt());
+    rs485.sendAnswer((String)actual_force);
+  }else if(command == "G3") // open
+  {
+    float actual_force = open();
+    rs485.sendAnswer((String)actual_force);
+  }else if(command == "G28") // open
+  {
+    float actual_force = home();
+    rs485.sendAnswer((String)"homed");
+  }else if(command == "M1337") // Test
   {
     rs485.sendAnswer((String)"leet");
   }
@@ -143,9 +190,6 @@ void setup()
   Serial.begin(115200);
   Serial.setTimeout(2000);
   Serial.println("---");
-
-  currentTime = millis();
-  lastKeepAlive = millis();
 
   Wire.begin();
   pinMode(LED_BUILTIN, OUTPUT);

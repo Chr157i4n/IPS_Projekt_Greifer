@@ -15,7 +15,7 @@ MotorDriver::MotorDriver(int pin_Step, int pin_Dir, int pin_En){
 }
 
 void MotorDriver::makeAStep(){
-    Serial.println((String)"Make one Step");
+    //Serial.println((String)"Make one Step");
     digitalWrite(_pin_Step, HIGH);
     delayMicroseconds(500);
     digitalWrite(_pin_Step, LOW);
