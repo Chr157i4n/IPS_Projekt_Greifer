@@ -14,6 +14,8 @@ import com.ur.urcap.api.ui.component.ImgComponent;
 import com.ur.urcap.api.ui.annotation.Select;
 import com.ur.urcap.api.ui.component.SelectDropDownList;
 import com.ur.urcap.api.ui.component.SelectEvent;
+import com.ur.urcap.api.ui.component.HTMLComponent;
+
 import com.ur.urcap.api.ui.component.InputRadioButton;
 import javax.imageio.ImageIO;
 
@@ -43,17 +45,42 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Input(id = "command_Choice1")
 	private InputRadioButton selectRadioButton1;
 
+	@Input(id = "command_Choice1")
+	public void onChoiceChange1(InputEvent event) {
+		changeChoice();
+	}
+
 	@Input(id = "command_Choice2")
 	private InputRadioButton selectRadioButton2;
+
+	@Input(id = "command_Choice2")
+	public void onChoiceChange2(InputEvent event) {
+		changeChoice();
+	}
 
 	@Input(id = "command_Choice3")
 	private InputRadioButton selectRadioButton3;
 
+	@Input(id = "command_Choice3")
+	public void onChoiceChange3(InputEvent event) {
+		changeChoice();
+	}
+
 	@Input(id = "command_Choice4")
 	private InputRadioButton selectRadioButton4;
 
+	@Input(id = "command_Choice4")
+	public void onChoiceChange4(InputEvent event) {
+		changeChoice();
+	}
+
 	@Input(id = "command_Choice5")
 	private InputRadioButton selectRadioButton5;
+
+	@Input(id = "command_Choice5")
+	public void onChoiceChange5(InputEvent event) {
+		changeChoice();
+	}
 
 	@Input(id = "motor_drive_NumberInput")
 	private InputTextField motor_drive_TextInput;
@@ -61,21 +88,21 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Input(id = "motor_close_NumberInput")
 	private InputTextField motor_close_TextInput;
 
-
-	
-
 	private InputRadioButton[] inputRadioButtonArray = new InputRadioButton[5];
+	private HTMLComponent[] deactivatableElementsArray = new HTMLComponent[4];
 
+	private void changeChoice() {
+		int choiceNumber = getSelectedRadioButtonIndex();
+		for(int i = 0; i < deactivatableElementsArray.length; i++){
+			deactivatableElementsArray[i].setEnabled(choiceNumber == i);
+		}
+	}
 
-	public void showPic(String s) {
-		String picName = s;
-		// if (s == "0") {
-
-		// }
+	private void showPic(String picName) {
 		try {
 			logoImage.setImage(ImageIO.read(getClass().getResource(picName)));
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
+		} catch (java.io.IOException exception) {
+			exception.printStackTrace();
 		}
 	}
 
@@ -91,6 +118,14 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		inputRadioButtonArray[2] = selectRadioButton3;
 		inputRadioButtonArray[3] = selectRadioButton4;
 		inputRadioButtonArray[4] = selectRadioButton5;
+
+		deactivatableElementsArray[0] = custom_command_TextInput;
+		deactivatableElementsArray[1] = motor_power_select;
+		deactivatableElementsArray[2] = motor_drive_TextInput;
+		deactivatableElementsArray[3] = motor_close_TextInput;
+
+		//changeChoice(1);
+
 
 		loadAllFormModel();
 
@@ -176,18 +211,21 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		setToModel("motor_power_Select", Integer.toString(motor_power_select.getSelectedIndex()));
 		setToModel("motor_drive_TextInput", motor_drive_TextInput.getText());
 		setToModel("motor_close_TextInput", motor_close_TextInput.getText());
+				
+		setToModel("command_select_RadioButton", Integer.toString(getSelectedRadioButtonIndex()));
+	}
 
+	private int getSelectedRadioButtonIndex() {
 		for(int i = 0; i < inputRadioButtonArray.length; i++){
 			if(inputRadioButtonArray[i].isSelected())
 			{
-				setToModel("command_select_RadioButton", Integer.toString(i));
-				break;
+				return i;
 			}
 		}
+		return -1;
 	}
 
 	private MyDaemonInstallationNodeContribution getInstallation() {
 		return api.getInstallationNode(MyDaemonInstallationNodeContribution.class);
 	}
-
 }
