@@ -11,9 +11,10 @@ import time
 
 
 def log(message):
-	sys.stdout.write(message+"\n")
-	sys.stderr.write(message+"\n")
-	print(message+"\n")
+	#sys.stdout.write(message+"\n")
+	#sys.stderr.write(message+"\n")
+	print(message)
+	#print(message+"\n")
 
 
 title = ""
@@ -31,16 +32,7 @@ except:
 def init():
 	pass
 
-def read_answer():
-	buffer=KEEPALIVE
-	while(buffer == KEEPALIVE):
-		buffer = serial.readline()
-		log(":"+str(buffer))
-	if(buffer==""):
-		log("NO ANSWER")
-	if(buffer[0]=="E"):
-		log("ERROR")
-	return buffer
+
 	
 def set_title(new_title):
 	global title
@@ -63,51 +55,58 @@ def get_message(name):
 
 def send_message(message):
 	if str(message):
+		log("command: \""+str(message)+"\"")
 		if(ser==None):
-			return "back: " + message
+			value = "A" + message
 		else:
 			ser.reset_input_buffer()
 			ser.write((message + "\n").encode())
-			value = ser.readline()
-			return value
+			value = read_answer()
+		log("return: \""+str(value)+"\"")
+		return value
 	else:
 		return "Error: No message set."
 
+def read_answer():
+	buffer=KEEPALIVE
+	while(buffer == KEEPALIVE):
+		buffer = serial.readline()
+		log(":"+str(buffer))
+	if(buffer==""):
+		log("NO ANSWER")
+	if(buffer[0]=="E"):
+		log("ERROR")
+	return buffer
+
 def get_measurement_value_test(channel):
 	global counter
-
 	log("Test Measurement from channel: "+channel+" requested")
 	counter += 1
 	return str(counter)
 
 def get_measurement_value(channel):
-	log("Measurement from channel: "+channel+" requested")
-	serial.write("M43 P"+str(channel))
-	value = read_answer()
+	#log("Measurement from channel: "+channel+" requested")
+	value = send_message("M43 P"+str(channel))
 	return value[1:]
 
 def motor_move(distance):
-	log("Move Motor "+str(distance)+" mm")
-	serial.write("G0 X"+str(distance))
-	value = read_answer()
+	#log("Move Motor "+str(distance)+" mm")
+	value = send_message("G0 X"+str(distance))
 	return value[1:]
 
 def motor_power(enable):
-	log("Motor Power: "+str(enable))
-	serial.write("M1"+str(8-int(enable)))
-	value = read_answer()
+	#log("Motor Power: "+str(enable))
+	value = send_message("M1"+str(8-int(enable)))
 	return value[1:]
 
 def motor_close(force):
-	log("Motor Close: "+str(force))
-	serial.write("G2 "+str(force))
-	value = read_answer()
+	#log("Motor Close: "+str(force))
+	value = send_message("G2 "+str(force))
 	return value[1:]
 
 def motor_open():
-	log("Motor Open")
-	serial.write("G3")
-	value = read_answer()
+	#log("Motor Open")
+	value = send_message("G3")
 	return value[1:]
 
 
