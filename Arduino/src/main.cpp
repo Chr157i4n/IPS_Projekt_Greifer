@@ -57,10 +57,10 @@ float open(int force = 10, int steps_afterwards=200){
   return currentForce;
 }
 
-int move(int steps){
+long move(long steps){
   if(steps==0) return 0;
   motorDriver.setDirection_pin(steps>0);
-  steps = abs(steps);
+  if(steps<0) steps=-steps;
   for(int i=0; i<steps; i++){
     rs485.keepAlive();
     motorDriver.makeAStep();
@@ -84,7 +84,7 @@ int home(){
 void parseLine(String message)
 {
   Serial.println((String)"Parsing Line: "+message);
-  
+  message.trim();
   int index_command_end = message.indexOf(COMM_DELIMITER);
   String command = "", parameters = "";
 
@@ -92,7 +92,7 @@ void parseLine(String message)
     command = message.substring(0,index_command_end);
     parameters = message.substring(index_command_end);
   } else {
-    command = message.substring(0,message.length()-1);
+    command = message.substring(0,message.length());
   }
 
   //Serial.println((String)"command: "+command);
@@ -104,7 +104,8 @@ void parseLine(String message)
     if(index_X>=0){
       int index_X_end = parameters.indexOf(' ', index_X);
       String move_amount_mm = parameters.substring(index_X+1, index_X_end);
-      int steps = move(round(move_amount_mm.toInt()*200/SPINDLE_PITCH));
+      long steps = round(move_amount_mm.toFloat()*200/SPINDLE_PITCH);
+      steps = move(steps);
       rs485.sendAnswer((String)steps);
     }else if(index_S>=0){
       int index_S_end = parameters.indexOf(' ', index_S);
