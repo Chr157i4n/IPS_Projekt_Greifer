@@ -70,7 +70,7 @@ def send_message(message):
 def read_answer():
 	buffer=KEEPALIVE
 	while(buffer == KEEPALIVE):
-		buffer = serial.readline()
+		buffer = ser.readline()
 		log(":"+str(buffer))
 	if(buffer==""):
 		log("NO ANSWER")
