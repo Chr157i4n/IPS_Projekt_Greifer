@@ -73,7 +73,7 @@ def read_answer():
 	buffer=KEEPALIVE
 	while(buffer == KEEPALIVE):
 		buffer = ser.readline()
-		buffer = buffer[:-1]
+		buffer = buffer.rstrip("\n")
 		log(":"+str(buffer))
 	if(buffer==""):
 		log("NO ANSWER")
