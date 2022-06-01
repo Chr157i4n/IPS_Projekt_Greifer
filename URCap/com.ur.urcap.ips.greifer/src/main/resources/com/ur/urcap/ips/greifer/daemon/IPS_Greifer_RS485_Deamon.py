@@ -23,11 +23,13 @@ KEEPALIVE = "M113"
 
 counter = 0
 
-try:
-	ser = serial.Serial (port=port, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=2.0, write_timeout=2.0,)
-except:
-	log("could not open port: "+port)
-	ser = None
+while(True):
+	try:
+		ser = serial.Serial (port=port, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=2.0, write_timeout=2.0,)
+		break
+	except:
+		log("could not open port: "+port)
+		#ser = None
 
 def init():
 	pass
@@ -71,6 +73,7 @@ def read_answer():
 	buffer=KEEPALIVE
 	while(buffer == KEEPALIVE):
 		buffer = ser.readline()
+		buffer = buffer[:-1]
 		log(":"+str(buffer))
 	if(buffer==""):
 		log("NO ANSWER")
