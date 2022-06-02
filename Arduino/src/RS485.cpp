@@ -1,6 +1,6 @@
 #include "RS485.hpp"
 
-RS485::RS485(int pin_Tx, int pin_Rx, int pin_EnTxPin, int baudrate = 19200)
+RS485::RS485(int pin_EnTxPin, int baudrate, int pin_Tx, int pin_Rx)
 {
     _pin_Tx = pin_Tx;
     _pin_Rx = pin_Rx;
@@ -23,9 +23,11 @@ RS485::RS485(int pin_Tx, int pin_Rx, int pin_EnTxPin, int baudrate = 19200)
 
 void RS485::sendMessage(String message)
 {
+    delay(4);
     beginTransmission();
     _sSerial->print(message);
     _sSerial->print("\n"); // finish data packet
+    delay(2);
     endTransmission();
 }
 
@@ -39,21 +41,22 @@ String RS485::sendCommand(char command, String message)
 }
 
 void RS485::sendAnswer(String message){
-    sendMessage('a'+message);
+    sendMessage('A'+message);
 }
 
 void RS485::sendError(String message){
-    sendMessage('e'+message);
+    sendMessage('E'+message);
 }
 
 void RS485::flush()
 {
-    Serial.println("flushing RS485 Buffer");
+    //Serial.println("flushing RS485 Buffer");
     while (_sSerial->available()>0)
     {
         _sSerial->read();
     }
-    buffer="";
+    
+    _sSerial->flush();
 }
 
 String RS485::readAnswer()
@@ -69,27 +72,9 @@ String RS485::readAnswer()
 
 String RS485::readCommand()
 {
-    
-
-    while (_sSerial->available())
-    {
-        char c = _sSerial->read();
-
-        if (c == endmarker)
-        {
-            buffer += '\0';
-            Serial.println((String) "got: "+buffer.length()+" : "+buffer);
-            //String tmpBuffer = buffer;
-            //buffer = "";
-
-            Serial.println(buffer);
-            
-            return buffer;
-        }
-        else
-        {
-            buffer += c;
-        }
-    }
-    return "";
+    buffer="";
+    buffer = Serial.readStringUntil(endmarker);
+    //Serial.println((String) "got: "+buffer.length()+" : "+buffer);
+    flush();
+    return buffer;
 }
