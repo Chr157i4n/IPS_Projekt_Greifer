@@ -14,12 +14,23 @@ MotorDriver::MotorDriver(int pin_Step, int pin_Dir, int pin_En){
     pinMode(_pin_Dir, OUTPUT);
 }
 
-void MotorDriver::makeAStep(){
+int MotorDriver::makeAStep(bool ignore_limit){
+    
+    int next_position = position + (_direction) ? 1 : -1;
+    if((next_position<limit.min || next_position>limit.max) && !ignore_limit){
+        //Serial.println((String)"Out of Bounds");
+        return -1;
+    }
+
     //Serial.println((String)"Make one Step");
+
     digitalWrite(_pin_Step, HIGH);
     delayMicroseconds(500);
     digitalWrite(_pin_Step, LOW);
     delayMicroseconds(500);
+
+    position = next_position;
+    return 0;
 }
 
 void MotorDriver::makeXSteps(int steps){

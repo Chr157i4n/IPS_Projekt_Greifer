@@ -6,6 +6,12 @@
 *
 */
 
+struct Limit
+{
+  int min = 0;
+  int max = 0;
+};
+
 class MotorDriver 
 {
   public:
@@ -16,7 +22,7 @@ class MotorDriver
     */
     MotorDriver(int pin_Step, int pin_Dir, int pin_En);
 
-    void makeAStep();
+    int makeAStep(bool ignore_limit=false);
 
     void makeXSteps(int steps);
 
@@ -25,8 +31,18 @@ class MotorDriver
     void setDirection_pin(bool dir);
 
     void reverseDirection_pin();
+
+    void setPosition(int pos){
+      position = pos;
+    }
+
+    void setLimit(Limit lim){
+      limit = lim;
+    }
     
   private:
     int _pin_Step = -1, _pin_Dir = -1, _pin_En = -1;
+    int position = 0;
+    Limit limit;
     bool _direction = true;
 };

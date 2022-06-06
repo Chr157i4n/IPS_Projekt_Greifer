@@ -7,6 +7,10 @@
 //#define DEBUG
 #define ENDSTOP_PIN 8
 #define SPINDLE_PITCH 1.5
+#define MOTOR_SPEED_DELAY 1
+
+#define LIMIT_MIN 0
+#define LIMIT_MAX 35
 
 /*
 * G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
@@ -32,26 +36,26 @@ float close(int force){
   float currentForce = forceSensor.getValue();
   while(currentForce < force){
     rs485.keepAlive();
-    motorDriver.makeAStep();
-    delay(1);
+    if(motorDriver.makeAStep() == -1) break;
+    delay(MOTOR_SPEED_DELAY);
     currentForce = forceSensor.getValue();
   }
   return currentForce;
 }
 
-float open(int force = 10, int steps_afterwards=200){
+float open(int force = 10, int steps_afterwards=800){
   motorDriver.setDirection_pin(false);
   float currentForce = forceSensor.getValue();
   while(currentForce > force){
     rs485.keepAlive();
-    motorDriver.makeAStep();
-    delay(1);
+    if(motorDriver.makeAStep() == -1) break;
+    delay(MOTOR_SPEED_DELAY);
     currentForce = forceSensor.getValue();
   }
   for(int i=0; i<steps_afterwards; i++){
     rs485.keepAlive();
-    motorDriver.makeAStep();
-    delay(1);
+    if(motorDriver.makeAStep() == -1) break;
+    delay(MOTOR_SPEED_DELAY);
   }
   currentForce = forceSensor.getValue();
   return currentForce;
@@ -63,21 +67,29 @@ long move(long steps){
   if(steps<0) steps=-steps;
   for(int i=0; i<steps; i++){
     rs485.keepAlive();
-    motorDriver.makeAStep();
+    if(motorDriver.makeAStep() == -1) break;
     delay(1);
   }
   return steps;
 }
 
-int home(){
+int home(int steps_afterwards=400){
+  motorDriver.setDirection_pin(false);
   bool endstop_state = digitalRead(ENDSTOP_PIN);
     while(endstop_state){
       rs485.keepAlive();
-      motorDriver.makeAStep();
-      delay(1);
+      motorDriver.makeAStep(true);
+      delay(MOTOR_SPEED_DELAY);
       endstop_state = digitalRead(ENDSTOP_PIN);
       //Serial.println((String)"Pinstate: "+endstop_state);
-  }
+    }
+    motorDriver.setDirection_pin(true);
+    for(int i=0; i<steps_afterwards; i++){
+      rs485.keepAlive();
+      motorDriver.makeAStep(true);
+      delay(MOTOR_SPEED_DELAY);
+    }
+    motorDriver.setPosition(0);
   return 0;
 }
 
@@ -191,6 +203,11 @@ void setup()
   Serial.begin(115200);
   Serial.setTimeout(2000);
   Serial.println("---");
+
+  Limit motor_limit;
+  motor_limit.min = LIMIT_MIN;
+  motor_limit.max = LIMIT_MAX;
+  motorDriver.setLimit(motor_limit);
 
   Wire.begin();
   pinMode(LED_BUILTIN, OUTPUT);
