@@ -16,7 +16,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MyDaemonInstallationNodeContribution implements InstallationNodeContribution {
-	private static final String POPUPTITLE_KEY = "popuptitle";
 
 	private static final String XMLRPC_VARIABLE = "my_daemon";
 	private static final String ENABLED_KEY = "enabled";
@@ -34,9 +33,6 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		applyDesiredDaemonStatus();
 	}
 
-	@Input(id = POPUPTITLE_KEY)
-	private InputTextField popupTitleField;
-
 	@Input(id = "txtFldSendMessage")
 	private InputTextField sendMessageTextField;
 
@@ -46,8 +42,8 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Input(id = "btnDisableDaemon")
 	private InputButton disableDaemonButton;
 
-	@Input(id = "btnmeasurementValue")
-	private InputButton measurementValueButton;
+	@Input(id = "btnTestConnection")
+	private InputButton testConnectionButton;
 
 	@Input(id = "btnSendMessage")
 	private InputButton sendMessageButton;
@@ -61,20 +57,18 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Label(id = "lblDaemonStatus")
 	private LabelComponent daemonStatusLabel;
 
-	@Label(id = "lblmeasurementValue")
-	private LabelComponent measurementValueLabel;
+	@Label(id = "lblTestConnection")
+	private LabelComponent testConnectionLabel;
 
 	@Label(id = "lblSendMessage")
 	private LabelComponent sendMessageLabel;
+
+	@Label(id = "lblPositionValue")
+	private LabelComponent positionValueLabel;
+
+	@Label(id = "lblForceValue")
+	private LabelComponent forceValueLabel;
 	
-
-	@Input(id = POPUPTITLE_KEY)
-	public void onMessageChange(InputEvent event) {
-		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
-			setPopupTitle(popupTitleField.getText());
-		}
-	}
-
 	@Input(id = "btnEnableDaemon")
 	public void onStartClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
@@ -91,14 +85,14 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
-	@Input(id = "btnmeasurementValue")
-	public void onMeasureClick(InputEvent event) {
+	@Input(id = "btnTestConnection")
+	public void onTestConnectionClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
-				String value = xmlRpcDaemonInterface.getMeasurementValueTest("channelTEST");
-				measurementValueLabel.setText(value);
+				String value = xmlRpcDaemonInterface.testConnection();
+				testConnectionLabel.setText(value);
 			} catch(Exception e){
-				System.err.println("Could not get a measurement value:\n"+e.toString());
+				System.err.println("Error while testing connection:\n"+e.toString());
 			}
 		}
 	}
@@ -143,12 +137,11 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	public void openView() {
 		System.out.println("Open View 1");
 		enableDaemonButton.setText("Start Daemon");
-		disableDaemonButton.setText("Stop daemon");
-		measurementValueButton.setText("Messen");
+		disableDaemonButton.setText("Stop Daemon");
+		testConnectionButton.setText("Testen");
 		sendMessageButton.setText("Send Message");
 		motorOnButton.setText("Motor On");
 		motorOffButton.setText("Motor Off");
-		popupTitleField.setText(getPopupTitle());
 
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
 		uiTimer = new Timer(true);
@@ -168,7 +161,8 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 
 	private void updateUI() {
 		System.out.println("Update UI 1");
-		DaemonContribution.State state = DaemonContribution.State.RUNNING;//getDaemonState();
+		DaemonContribution.State state = DaemonContribution.State.RUNNING;
+		//DaemonContribution.State state = getDaemonState();
 
 		if (state == DaemonContribution.State.RUNNING) {
 			enableDaemonButton.setEnabled(false);
@@ -194,6 +188,19 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 			break;
 		}
 		daemonStatusLabel.setText(text);
+
+		if(state == DaemonContribution.State.RUNNING){
+			try {				
+				String position = xmlRpcDaemonInterface.sendMessage("M44 S0");
+				positionValueLabel.setText(position.substring(1));
+
+				String force = xmlRpcDaemonInterface.sendMessage("M44 S1");
+				forceValueLabel.setText(force.substring(1));
+			} catch(Exception e){
+				System.err.println("Error while updating position and force:\n"+e.toString());
+			}
+		}
+
 		System.out.println("Update UI 2");
 	}
 
@@ -212,39 +219,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	public void generateScript(ScriptWriter writer) {
 		writer.globalVariable(XMLRPC_VARIABLE, "rpc_factory(\"xmlrpc\", \"http://127.0.0.1:40405/RPC2\")");
 		// Apply the settings to the daemon on program start in the Installation pre-amble
-		writer.appendLine(XMLRPC_VARIABLE + ".set_title(\"" + getPopupTitle() + "\")");
-	}
-
-	public String getPopupTitle() {
-		if (!model.isSet(POPUPTITLE_KEY)) {
-			resetToDefaultValue();
-		}
-		return model.get(POPUPTITLE_KEY, DEFAULT_VALUE);
-	}
-
-	private void setPopupTitle(String title) {
-		if ("".equals(title)) {
-			resetToDefaultValue();
-		} else {
-			model.set(POPUPTITLE_KEY, title);
-			// Apply the new setting to the daemon for real-time preview purposes
-			// Note this might influence a running program, since the actual state is stored in the daemon.
-			setDaemonTitle(title);
-		}
-	}
-
-	private void resetToDefaultValue() {
-		popupTitleField.setText(DEFAULT_VALUE);
-		model.set(POPUPTITLE_KEY, DEFAULT_VALUE);
-		setDaemonTitle(DEFAULT_VALUE);
-	}
-
-	private void setDaemonTitle(String title) {
-		try {
-			xmlRpcDaemonInterface.setTitle(title);
-		} catch(Exception e){
-			System.err.println("Could not set the title in the daemon process.");
-		}
+		// writer.appendLine(XMLRPC_VARIABLE + ".set_title(\"" + getPopupTitle() + "\")");
 	}
 
 	private void applyDesiredDaemonStatus() {
@@ -252,26 +227,16 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 			@Override
 			public void run() {
 				if (isDaemonEnabled()) {
-					// Download the daemon settings to the daemon process on initial start for real-time preview purposes
 					try {
-						awaitDaemonRunning(5000);
-						xmlRpcDaemonInterface.setTitle(getPopupTitle());
+						daemonService.getDaemon().start();
 					} catch (Exception e) {
-						System.err.println("Could not set the title in the daemon process.");
+						System.err.println("Error while starting the Daemon");
 					}
 				} else {
 					daemonService.getDaemon().stop();
 				}
 			}
 		}).start();
-	}
-
-	private void awaitDaemonRunning(long timeOutMilliSeconds) throws InterruptedException {
-		daemonService.getDaemon().start();
-		long endTime = System.nanoTime() + timeOutMilliSeconds * 1000L * 1000L;
-		while(System.nanoTime() < endTime && (daemonService.getDaemon().getState() != DaemonContribution.State.RUNNING || !xmlRpcDaemonInterface.isReachable())) {
-			Thread.sleep(100);
-		}
 	}
 
 	private DaemonContribution.State getDaemonState(){

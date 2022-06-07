@@ -39,11 +39,11 @@ class RS485
     String readCommand();
 
     void setReceving(){
-        digitalWrite(_pin_EnTxPin, LOW); 
+        digitalWrite(pinEnTxPin, LOW); 
     }
 
     void setTransmitting(){
-        digitalWrite(_pin_EnTxPin, HIGH); 
+        digitalWrite(pinEnTxPin, HIGH); 
     }
 
     void beginTransmission(){
@@ -57,7 +57,7 @@ class RS485
     
     
   private:
-    int _pin_Tx = -1, _pin_Rx = -1, _pin_EnTxPin = -1, _baudrate = -1;
+    int _pin_Tx = -1, _pin_Rx = -1, pinEnTxPin = -1, _baudrate = -1;
     unsigned long lastKeepAlive = 0;
     
 #if USE_HARWARE_SERIAL == 1

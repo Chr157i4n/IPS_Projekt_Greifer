@@ -24,6 +24,7 @@
 * M44   -   Read Sensor value
 * M43   -   Read I/O pin
 * M113  -   Host Keepalive
+* M114  -   Get Current Position
 * M226  -   Wait for pin state
 */
 
@@ -32,7 +33,7 @@ MotorDriver motorDriver(11, 13, 12);
 ForceSensor forceSensor;
 
 float close(int force){
-  motorDriver.setDirection_pin(true);
+  motorDriver.setDirectionPin(true);
   float currentForce = forceSensor.getValue();
   while(currentForce < force){
     rs485.keepAlive();
@@ -44,7 +45,7 @@ float close(int force){
 }
 
 float open(int force = 10, int steps_afterwards=800){
-  motorDriver.setDirection_pin(false);
+  motorDriver.setDirectionPin(false);
   float currentForce = forceSensor.getValue();
   while(currentForce > force){
     rs485.keepAlive();
@@ -63,7 +64,7 @@ float open(int force = 10, int steps_afterwards=800){
 
 long move(long steps){
   if(steps==0) return 0;
-  motorDriver.setDirection_pin(steps>0);
+  motorDriver.setDirectionPin(steps>0);
   if(steps<0) steps=-steps;
   for(int i=0; i<steps; i++){
     rs485.keepAlive();
@@ -74,7 +75,7 @@ long move(long steps){
 }
 
 int home(int steps_afterwards=400){
-  motorDriver.setDirection_pin(false);
+  motorDriver.setDirectionPin(false);
   bool endstop_state = digitalRead(ENDSTOP_PIN);
     while(endstop_state){
       rs485.keepAlive();
@@ -83,7 +84,7 @@ int home(int steps_afterwards=400){
       endstop_state = digitalRead(ENDSTOP_PIN);
       //Serial.println((String)"Pinstate: "+endstop_state);
     }
-    motorDriver.setDirection_pin(true);
+    motorDriver.setDirectionPin(true);
     for(int i=0; i<steps_afterwards; i++){
       rs485.keepAlive();
       motorDriver.makeAStep(true);
@@ -140,11 +141,7 @@ void parseLine(String message)
   {
     float actual_force = home();
     rs485.sendAnswer((String)"homed");
-  }else if(command == "M1337") // Test
-  {
-    rs485.sendAnswer((String)"leet");
-  }
-  else if(command == "M17") // enable Motor Output
+  }else if(command == "M17") // enable Motor Output
   {
     motorDriver.setMotorEnabled(true);
     rs485.sendAnswer((String)"motor_enabled");
@@ -173,6 +170,7 @@ void parseLine(String message)
     int index_P_end = parameters.indexOf(' ', index_P);
     String pin = parameters.substring(index_P+1, index_P_end);
 
+    pinMode(pin.toInt(), INPUT);
     bool state = digitalRead(pin.toInt());
     rs485.sendAnswer((String)state);
     //Serial.println((String)"A"+state);
@@ -183,11 +181,27 @@ void parseLine(String message)
     int index_S_end = parameters.indexOf(' ', index_S);
     String sensor = parameters.substring(index_S+1, index_S_end);
     float value = -1;
-    if(sensor.toInt() == 1){
+    if(sensor.toInt() == 0){  //motor position
+      value = motorDriver.getPosition();
+    }
+    if(sensor.toInt() == 1){  //force sensor value
       value = forceSensor.getValue();
+    }
+    if(sensor.toInt() == 2){  //endstop 1 value
+      value = digitalRead(8);
     }
     rs485.sendAnswer((String)value);
     //Serial.println((String)"A"+state);
+  }else if(command == "M114") // Get Current Position
+  {
+    int index_X = parameters.indexOf('X');
+    if(index_X != -1){
+      rs485.sendAnswer((String)motorDriver.getPosition());
+    }
+    
+  }else if(command == "M1337") // Test
+  {
+    rs485.sendAnswer((String)"leet");
   }
   else
   {
@@ -212,7 +226,7 @@ void setup()
   Wire.begin();
   pinMode(LED_BUILTIN, OUTPUT);
 
-  motorDriver.setDirection_pin(true);
+  motorDriver.setDirectionPin(true);
 }
 
 void loop()
