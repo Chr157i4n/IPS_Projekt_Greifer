@@ -19,6 +19,8 @@ float ForceSensor::getValue()
 
     }
 
+    //Serial.println((String)"data: "+data);
+
     float force = (float(data)-255)/512*450;
     force = force/FORCE_LEVER_RATIO;
 
@@ -40,9 +42,11 @@ short ForceSensor::readDataFromSensor()
     byte error = Wire.endTransmission(); // stop transmitting and check slave status
     if (error != 0)
         return -1;                              // if slave not exists or has error, return -1
+
     Wire.requestFrom(i2cAddress, i2cPacketLength); // require 6 bytes from slave
 
     byte incomeCount = 0;
+    long startTime = millis();
     while (incomeCount < i2cPacketLength) // slave may send less than requested
     {
         if (Wire.available())
@@ -53,6 +57,10 @@ short ForceSensor::readDataFromSensor()
         else
         {
             delayMicroseconds(10); // Wait 10us
+        }
+
+        if(millis() > startTime+timeout){
+            return -1;
         }
     }
 

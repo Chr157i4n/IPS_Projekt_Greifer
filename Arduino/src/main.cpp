@@ -3,15 +3,25 @@
 #include "RS485.hpp"
 #include "ForceSensor.hpp"
 
-#define COMM_DELIMITER ' '
+
 //#define DEBUG
+
+#define COMM_DELIMITER ' '
+
 #define ENDSTOP_PIN 8
 #define SPINDLE_PITCH 1.5
 #define GEAR_RATIO 2
 #define MOTOR_SPEED_DELAY 1
 
-#define LIMIT_MIN 0
-#define LIMIT_MAX 35
+#define LIMIT_MIN_MM 0
+#define LIMIT_MAX_MM 35
+
+#define PIN_END1 8
+#define PIN_END2 7
+#define PIN_MOTORDRIVER_EN 12
+#define PIN_MOTORDRIVER_STEP 11
+#define PIN_MOTORDRIVER_DIR 13
+#define RS485_EN_TX 9
 
 /*
 
@@ -20,7 +30,6 @@ G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
 G2    -   close (specify clamping force with Fxx)
 G3    -   open
 G28   -   Move to Origin (Home)
-
 M17   -   Enable Motor Output
 M18   -   Disable Motor Output
 M42   -   Switch I/O pin
@@ -38,7 +47,7 @@ Answers Codes:
 A0    -   command successfully finished
 
 Error Codes:
-E10   -   Force sensor value not available
+E10   -   Sensor communication error
 E20   -   command not available
 E30   -   parameter error
 
@@ -46,8 +55,8 @@ E30   -   parameter error
 
 
 
-RS485 rs485(9, 115200);
-MotorDriver motorDriver(11, 13, 12);
+RS485 rs485(RS485_EN_TX, 115200);
+MotorDriver motorDriver(PIN_MOTORDRIVER_STEP, PIN_MOTORDRIVER_DIR, PIN_MOTORDRIVER_EN);
 ForceSensor forceSensor;
 
 float close(int force){
@@ -223,22 +232,26 @@ void parseLine(String message)
   {
     int index_S = parameters.indexOf('S');
     int index_S_end = parameters.indexOf(' ', index_S);
-    String sensor = parameters.substring(index_S+1, index_S_end);
+    int sensor = parameters.substring(index_S+1, index_S_end).toInt();
     float value = -1;
-    if(sensor.toInt() == 0){  //motor position
+    if(sensor == 0){  //motor position
       value = motorDriver.getPosition();
-    }
-    if(sensor.toInt() == 1){  //force sensor value
+    }else if(sensor == 1){  //force sensor value
       value = forceSensor.getValue();
+    }else if(sensor == 2){  //endstop 1 value
+      value = digitalRead(PIN_END1);
+    }else if(sensor == 3){  //endstop 1 value
+      value = digitalRead(PIN_END2);
+    }else{
+      value = -2;
     }
-    if(sensor.toInt() == 2){  //endstop 1 value
-      value = digitalRead(8);
-    }
+    
     if(value == -1){
       rs485.sendError((String)"10");
+    }else if(value == -2){
+      rs485.sendError((String)"30");
     }else{
       rs485.sendAnswer((String)value);
-      //Serial.println((String)"A"+state);
     }
   }else if(command == "M114") // Get Current Position
   {
@@ -267,29 +280,43 @@ void setup()
   Serial.println("---");
 
   Limit motor_limit;
-  motor_limit.min = LIMIT_MIN;
-  motor_limit.max = LIMIT_MAX;
+  motor_limit.min = LIMIT_MIN_MM*200/SPINDLE_PITCH*GEAR_RATIO;
+  motor_limit.max = LIMIT_MAX_MM*200/SPINDLE_PITCH*GEAR_RATIO;
   motorDriver.setLimit(motor_limit);
 
   Wire.begin();
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(PIN_END1, INPUT_PULLUP);
+  pinMode(PIN_END2, INPUT_PULLUP);
 
   motorDriver.setDirectionPin(true);
+
 }
 
 void loop()
 {
-  // String answer = rs485.readCommand();
-  // if (answer.length()>0)
-  // {
-  //   digitalWrite(LED_BUILTIN, HIGH);
-  //   #ifdef DEBUG
-  //   Serial.println((String)"Message: "+answer);
-  //   #endif
-  //   parseLine(answer);
-  //   digitalWrite(LED_BUILTIN, LOW);
-  // }
-  // delay(1);
-  parseLine("M44 S1");
-  delay(100);
+  String answer = rs485.readCommand();
+  if (answer.length()>0)
+  {
+    digitalWrite(LED_BUILTIN, HIGH);
+    #ifdef DEBUG
+    Serial.println((String)"Message: "+answer);
+    #endif
+    parseLine(answer);
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+  delay(1);
+
+  // parseLine("M17");
+  // parseLine("G2 F20");
+  // parseLine("G3");
+  // parseLine("M18");
+  // delay(10000);
+
+  // parseLine("M17");
+  // parseLine("G28");
+  // parseLine("G0 X40");
+  // parseLine("G0 X-40");
+  // parseLine("M18");
+  // delay(5000);
 }

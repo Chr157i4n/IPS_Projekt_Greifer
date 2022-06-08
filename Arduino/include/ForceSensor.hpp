@@ -41,4 +41,5 @@ public:
 
 private:
     short i2cAddress = 0;
+    int timeout = 2;
 };
