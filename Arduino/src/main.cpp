@@ -7,26 +7,44 @@
 //#define DEBUG
 #define ENDSTOP_PIN 8
 #define SPINDLE_PITCH 1.5
+#define GEAR_RATIO 2
 #define MOTOR_SPEED_DELAY 1
 
 #define LIMIT_MIN 0
 #define LIMIT_MAX 35
 
 /*
-* G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
-* G2    -   close (specify clamping force with Fxx)
-* G3    -   clamp
-* G28   -   Move to Origin (Home)
-*
-* M17   -   Enable Motor Output
-* M18   -   Disable Motor Output
-* M42   -   Switch I/O pin
-* M44   -   Read Sensor value
-* M43   -   Read I/O pin
-* M113  -   Host Keepalive
-* M114  -   Get Current Position
-* M226  -   Wait for pin state
+
+Commands:
+G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
+G2    -   close (specify clamping force with Fxx)
+G3    -   open
+G28   -   Move to Origin (Home)
+
+M17   -   Enable Motor Output
+M18   -   Disable Motor Output
+M42   -   Switch I/O pin
+M44   -   Read Sensor value
+M43   -   Read I/O pin
+M113  -   Host Keepalive
+M114  -   Get Current Position
+M226  -   Wait for pin state
+
+
+Answers begin with "A" when everything is ok
+Error will be returned with a beginning "E"
+
+Answers Codes:
+A0    -   command successfully finished
+
+Error Codes:
+E10   -   Force sensor value not available
+E20   -   command not available
+E30   -   parameter error
+
 */
+
+
 
 RS485 rs485(9, 115200);
 MotorDriver motorDriver(11, 13, 12);
@@ -40,6 +58,9 @@ float close(int force){
     if(motorDriver.makeAStep() == -1) break;
     delay(MOTOR_SPEED_DELAY);
     currentForce = forceSensor.getValue();
+    if(currentForce == -1){
+      return -1;
+    }
   }
   return currentForce;
 }
@@ -117,7 +138,7 @@ void parseLine(String message)
     if(index_X>=0){
       int index_X_end = parameters.indexOf(' ', index_X);
       String move_amount_mm = parameters.substring(index_X+1, index_X_end);
-      long steps = round(move_amount_mm.toFloat()*200/SPINDLE_PITCH);
+      long steps = round(move_amount_mm.toFloat()*200/SPINDLE_PITCH*GEAR_RATIO);
       steps = move(steps);
       rs485.sendAnswer((String)steps);
     }else if(index_S>=0){
@@ -125,43 +146,66 @@ void parseLine(String message)
       String move_amount_steps = parameters.substring(index_S+1, index_S_end);
       int steps = move(move_amount_steps.toInt());
       rs485.sendAnswer((String)steps);
+    }else{
+      rs485.sendError((String)"30");
     }
   }else if(command == "G2") // close
   {
     int index_F = parameters.indexOf('F');
-    int index_F_end = parameters.indexOf(' ', index_F);
-    String move_amount_force = parameters.substring(index_F+1, index_F_end);
-    float actual_force = close(move_amount_force.toInt());
-    rs485.sendAnswer((String)actual_force);
+    if(index_F>=0){
+      String move_amount_force = parameters.substring(index_F+1);
+      float actual_force = close(move_amount_force.toInt());
+      if(actual_force == -1){
+        rs485.sendError((String)"10");
+      }else{
+        rs485.sendAnswer((String)actual_force);
+      }
+    }else{
+      rs485.sendError((String)"30");
+    }
   }else if(command == "G3") // open
   {
     float actual_force = open();
     rs485.sendAnswer((String)actual_force);
   }else if(command == "G28") // open
   {
-    float actual_force = home();
-    rs485.sendAnswer((String)"homed");
+    float status = home();
+    if(status == -1){
+      rs485.sendError((String)"10");
+    }else{
+      rs485.sendAnswer((String)"0");
+    }
   }else if(command == "M17") // enable Motor Output
   {
     motorDriver.setMotorEnabled(true);
-    rs485.sendAnswer((String)"motor_enabled");
+    rs485.sendAnswer((String)"0");
   }
   else if(command == "M18") // disable Motor Output
   {
     motorDriver.setMotorEnabled(false);
-    rs485.sendAnswer((String)"motor_disabled");
+    rs485.sendAnswer((String)"0");
   }
   else if(command == "M42") // Switch I/O pin
   {
     int index_P = parameters.indexOf('P');
     int index_P_end = parameters.indexOf(' ', index_P);
-    String pin = parameters.substring(index_P+1, index_P_end);
+    int pin = 0;
+    if(index_P >= 0 && index_P_end >= 0)
+      pin = parameters.substring(index_P+1, index_P_end).toInt();
+    else{
+      rs485.sendError((String)"30");
+    }
 
     int index_S = parameters.indexOf('S');
     int index_S_end = parameters.indexOf(' ', index_S);
-    String state = parameters.substring(index_S+1, index_S_end);
+    int state = 0;
+    if(index_S >= 0 && index_S_end >= 0)
+      state = parameters.substring(index_S+1, index_S_end).toInt();
+    else{
+      rs485.sendError((String)"30");
+    }
 
-    digitalWrite(pin.toInt(), state.toInt());
+    digitalWrite(pin, state);
     rs485.sendAnswer((String)"pin_switched");
   }
   else if(command == "M43") // Read I/O pin
@@ -190,8 +234,12 @@ void parseLine(String message)
     if(sensor.toInt() == 2){  //endstop 1 value
       value = digitalRead(8);
     }
-    rs485.sendAnswer((String)value);
-    //Serial.println((String)"A"+state);
+    if(value == -1){
+      rs485.sendError((String)"10");
+    }else{
+      rs485.sendAnswer((String)value);
+      //Serial.println((String)"A"+state);
+    }
   }else if(command == "M114") // Get Current Position
   {
     int index_X = parameters.indexOf('X');
@@ -205,7 +253,7 @@ void parseLine(String message)
   }
   else
   {
-    rs485.sendError("command_not_available");
+    rs485.sendError("20");
     //Serial.println("Command not available");
   }
 
@@ -231,15 +279,17 @@ void setup()
 
 void loop()
 {
-  String answer = rs485.readCommand();
-  if (answer.length()>0)
-  {
-    digitalWrite(LED_BUILTIN, HIGH);
-    #ifdef DEBUG
-    Serial.println((String)"Message: "+answer);
-    #endif
-    parseLine(answer);
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-  delay(1);
+  // String answer = rs485.readCommand();
+  // if (answer.length()>0)
+  // {
+  //   digitalWrite(LED_BUILTIN, HIGH);
+  //   #ifdef DEBUG
+  //   Serial.println((String)"Message: "+answer);
+  //   #endif
+  //   parseLine(answer);
+  //   digitalWrite(LED_BUILTIN, LOW);
+  // }
+  // delay(1);
+  parseLine("M44 S1");
+  delay(100);
 }

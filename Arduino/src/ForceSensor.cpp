@@ -9,13 +9,18 @@ ForceSensor::ForceSensor(short address)
 
 float ForceSensor::getValue()
 {
-    short data = readDataFromSensor();
-    //Serial.print("I2C Sensor Data:");
-    //Serial.print(data);
-    //Serial.print("\n");
-    //delay(100); // Change this if you are getting values too quickly
+    short data = -1;
+    short tries = 0;
+    while(data == -1){
+        tries++;
+        if(tries>=10)
+            return -1;
+        data = readDataFromSensor();
+
+    }
+
     float force = (float(data)-255)/512*450;
-    //force = force/FORCE_LEVER_RATIO;
+    force = force/FORCE_LEVER_RATIO;
 
     return force;
 }
