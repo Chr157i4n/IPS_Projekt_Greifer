@@ -309,6 +309,7 @@ void loop()
 
   // parseLine("M17");
   // parseLine("G2 F20");
+  // delay(4000);
   // parseLine("G3");
   // parseLine("M18");
   // delay(10000);
