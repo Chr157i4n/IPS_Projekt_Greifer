@@ -27,7 +27,7 @@ float ForceSensor::getValue()
     return force;
 }
 
-float ForceSensor::getValueAverage(int valueCount=4){
+float ForceSensor::getValueAverage(int valueCount){
     float value = 0;
     for(int i=0; i<valueCount; i++){
         float newvalue = getValue();
@@ -37,13 +37,13 @@ float ForceSensor::getValueAverage(int valueCount=4){
         delayMicroseconds(100);
     }
     value /= valueCount;
-    Serial.println((String)"value average: "+value);
+    //Serial.println((String)"value average: "+value);
     return value;
 }
 
 short ForceSensor::readDataFromSensor()
 {
-    byte i2cPacketLength = 6;  // i2c packet length. Just need 6 bytes from each slave
+    int i2cPacketLength = 6;  // i2c packet length. Just need 6 bytes from each slave
     byte outgoingI2CBuffer[3]; // outgoing array buffer
     byte incomingI2CBuffer[6]; // incoming array buffer
 
@@ -60,7 +60,7 @@ short ForceSensor::readDataFromSensor()
     Wire.requestFrom(i2cAddress, i2cPacketLength); // require 6 bytes from slave
 
     byte incomeCount = 0;
-    long startTime = millis();
+    unsigned long startTime = millis();
     while (incomeCount < i2cPacketLength) // slave may send less than requested
     {
         if (Wire.available())
