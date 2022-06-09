@@ -168,8 +168,11 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==4){	// motor open
 			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".motor_open()");
-			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
+			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
 		}
+		writer.appendLine("if ips_greifer_return_value[0] == \"E\":");
+		writer.appendLine("\tpopup(ips_greifer_return_value, \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("end");
 
 		// writer.writeChildren();
 	}
