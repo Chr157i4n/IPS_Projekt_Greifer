@@ -66,7 +66,7 @@ float close(int force){
     rs485.keepAlive();
     if(motorDriver.makeAStep() == -1) break;
     delay(MOTOR_SPEED_DELAY);
-    currentForce = forceSensor.getValue();
+    currentForce = forceSensor.getValueAverage();
     if(currentForce == -1){
       return -1;
     }
@@ -320,4 +320,7 @@ void loop()
   // parseLine("G0 X-40");
   // parseLine("M18");
   // delay(5000);
+
+  // forceSensor.getValueAverage();
+  // delay(10);
 }

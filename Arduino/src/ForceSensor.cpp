@@ -27,6 +27,20 @@ float ForceSensor::getValue()
     return force;
 }
 
+float ForceSensor::getValueAverage(int valueCount=4){
+    float value = 0;
+    for(int i=0; i<valueCount; i++){
+        float newvalue = getValue();
+        //Serial.println((String)"value: "+value);
+        if(newvalue == -1) return -1;
+        value += newvalue;
+        delayMicroseconds(100);
+    }
+    value /= valueCount;
+    Serial.println((String)"value average: "+value);
+    return value;
+}
+
 short ForceSensor::readDataFromSensor()
 {
     byte i2cPacketLength = 6;  // i2c packet length. Just need 6 bytes from each slave

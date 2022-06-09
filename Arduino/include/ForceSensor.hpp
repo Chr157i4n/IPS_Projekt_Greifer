@@ -37,6 +37,8 @@ public:
 
     float getValue(); // reads the sensor value, return the force in Newton
 
+    float getValueAverage(int valueCount=4);
+
     short readDataFromSensor();
 
 private:
