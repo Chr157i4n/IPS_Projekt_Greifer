@@ -191,7 +191,15 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G28\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
 		}
-		writer.appendLine("if str_at(ips_greifer_return_value,0) == \"E\":");
+		writer.appendLine("elif ips_greifer_return_value == \"E10\":");
+		writer.appendLine("\tpopup(\"Greifer: Sensor Kommunikationsfehler\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"E20\":");
+		writer.appendLine("\tpopup(\"Greifer: Befehl nicht verfügbar\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"E30\":");
+		writer.appendLine("\tpopup(\"Greifer: Befehlsparameter fehlerhaft\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"W40\":");
+		writer.appendLine("\tpopup(\"Greifer: Position außerhalb von Limit\", \"Greifer Warnung\", True, False, blocking=True)");
+		writer.appendLine("elif str_at(ips_greifer_return_value,0) == \"E\":");
 		writer.appendLine("\tpopup(str_cat(\"Errorcode: \", ips_greifer_return_value), \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"-1\":");
 		writer.appendLine("\tpopup(\"RS485: Fehlerhafte Antwort\", \"Greifer Fehler\", False, True, blocking=True)");

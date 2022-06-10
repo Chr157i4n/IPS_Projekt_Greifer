@@ -48,6 +48,10 @@ void RS485::sendError(String message){
     sendMessage('E'+message);
 }
 
+void RS485::sendWarning(String message){
+    sendMessage('W'+message);
+}
+
 void RS485::flush()
 {
     //Serial.println("flushing RS485 Buffer");
