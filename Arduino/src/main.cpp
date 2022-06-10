@@ -26,7 +26,7 @@
 /*
 
 Commands:
-G0    -   Move the Motor a given amount of steps (X+-xxx, like X-100, or X100)
+G0    -   Move the Motor a given amount of steps(S) / mm(X) (X+-xxx, like X-100, or X100)
 G2    -   close (specify clamping force with Fxx)
 G3    -   open
 G28   -   Move to Origin (Home)

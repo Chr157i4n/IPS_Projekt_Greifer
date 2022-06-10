@@ -50,16 +50,23 @@ def send_message(message):
 		return "Error: No message set."
 
 def read_answer():
-	buffer=KEEPALIVE
-	while(buffer == KEEPALIVE):
+	buffer = KEEPALIVE
+	buffer_stripped = KEEPALIVE
+	while(buffer_stripped == KEEPALIVE):
 		buffer = ser.readline()
-		buffer = buffer.rstrip("\n")
-		log(":"+str(buffer))
-	if(buffer==""):
+		buffer_stripped = buffer.rstrip("\n")
+		log(":"+str(buffer_stripped))
+	if(len(buffer) > 0 and buffer[-1] != "\n"):
+		log("INCOMPLETE ANSWER")
+		return "-1"
+	elif(buffer_stripped == ""):
 		log("NO ANSWER")
-	if(buffer[0]=="E"):
+		return "-2"
+	elif(buffer_stripped[0] == "E"):
 		log("ERROR")
-	return buffer
+		return buffer_stripped
+	else:
+		return buffer_stripped
 
 def test_connection():
 	global counter
