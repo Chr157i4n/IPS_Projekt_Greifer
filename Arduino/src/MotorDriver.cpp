@@ -2,31 +2,43 @@
 
 
 MotorDriver::MotorDriver(int pin_Step, int pin_Dir, int pin_En){
-    _pin_Step = pin_Step;
-    _pin_Dir = pin_Dir;
-    _pin_En = pin_En;
+    pinStep = pin_Step;
+    pinDir = pin_Dir;
+    pinEn = pin_En;
 
     setMotorEnabled(false);
-    pinMode(_pin_En, OUTPUT);
+    pinMode(pinEn, OUTPUT);
     setMotorEnabled(false);
 
-    pinMode(_pin_Step, OUTPUT);
-    pinMode(_pin_Dir, OUTPUT);
+    pinMode(pinStep, OUTPUT);
+    pinMode(pinDir, OUTPUT);
 }
 
-void MotorDriver::makeAStep(){
+int MotorDriver::makeAStep(bool ignore_limit){
+    
+    int next_position = position + ((direction) ? 1 : -1);
+    if((next_position<limit.min || next_position>limit.max) && !ignore_limit){
+        Serial.println((String)"Out of Bounds: "+position);
+        return -1;
+    }
+
     //Serial.println((String)"Make one Step");
-    digitalWrite(_pin_Step, HIGH);
+    //Serial.println((String)"pos: "+position);
+
+    digitalWrite(pinStep, HIGH);
     delayMicroseconds(500);
-    digitalWrite(_pin_Step, LOW);
+    digitalWrite(pinStep, LOW);
     delayMicroseconds(500);
+
+    position = next_position;
+    return 0;
 }
 
 void MotorDriver::makeXSteps(int steps){
 
     if(steps==0) return;
 
-    setDirection_pin(steps>0);
+    setDirectionPin(steps>0);
 
     steps = abs(steps);
 
@@ -37,18 +49,18 @@ void MotorDriver::makeXSteps(int steps){
 }
 
 void MotorDriver::setMotorEnabled(bool en){
-    Serial.println((String)"Motor Enable: "+_pin_En+" to "+!en);
-    digitalWrite(_pin_En, !en);
+    Serial.println((String)"Motor Enable: "+pinEn+" to "+!en);
+    digitalWrite(pinEn, !en);
 }
 
-void MotorDriver::setDirection_pin(bool dir){
-    Serial.println((String)"Motor Dir: "+_pin_Dir+" to "+dir);
-    _direction = dir;
-    digitalWrite(_pin_Dir, _direction);
+void MotorDriver::setDirectionPin(bool dir){
+    Serial.println((String)"Motor Dir: "+pinDir+" to "+dir);
+    direction = dir;
+    digitalWrite(pinDir, direction);
     delay(10);
 }
 
-void MotorDriver::reverseDirection_pin(){
-    _direction = !_direction;
-    digitalWrite(_pin_Dir, _direction);
+void MotorDriver::reverseDirectionPin(){
+    direction = !direction;
+    digitalWrite(pinDir, direction);
 }

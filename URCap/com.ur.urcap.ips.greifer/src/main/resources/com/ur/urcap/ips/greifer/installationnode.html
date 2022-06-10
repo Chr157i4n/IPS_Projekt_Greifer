@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Mein Demon Titel</title>
+		<title>IPS_Greifer</title>
 		<style>
 			label {
 				display: inline-block;
@@ -17,19 +17,15 @@
 		</style>
 	</head>
 	<body>
-		<h1>Mein Demon H1 Überschrift</h1>
-		<form>
-			<p>The popup title below is shared between all MyDaemon program nodes through the driver.<br />Cannot be empty.</p>
-			<br />
-			<label>Popup title:</label><input id="popuptitle" type="text"/>
-			<div class="spacer">&nbsp;</div>		
+		<h1>IPS Greifer Installation</h1>
+		<form>		
 			<input id="btnEnableDaemon" type="button" style="font-size: 18px;" />
 			<input id="btnDisableDaemon" type="button" style="font-size: 18px;" />
 			<div>&nbsp;</div>
-			<label id="lblDaemonStatus" style="width: 200px;">Status of daemon</label>
+			<label id="lblDaemonStatus" style="width: 200px;">Daemonstatus</label>
 			<div>&nbsp;</div>
-			<input id="btnmeasurementValue" type="button" style="font-size: 18px;" />
-			<label id="lblmeasurementValue" style="width: 200px;">Messwert: </label>
+			<input id="btnTestConnection" type="button" style="font-size: 18px;" />
+			<label id="lblTestConnection" style="width: 200px;">Antwort: </label>
 			<div>&nbsp;</div>
 			<br>
 			<label>Enter message:</label> 
@@ -39,11 +35,18 @@
 			<br>
 			<input id="btnSendMessage" type="button" style="font-size: 18px;" />
 			<br>
-			<label id="lblSendMessage" style="width: 500px;">Message: </label>
+			<label id="lblSendMessage" style="width: 500px;">Antwort: </label>
 
 			<div>&nbsp;</div>
 			<input id="btnMotorOn" type="button" style="font-size: 18px;" />
 			<input id="btnMotorOff" type="button" style="font-size: 18px;" />
+			<br>
+			<br>
+			<label>Position:</label> 
+			<label id="lblPositionValue">---</label> 
+			<br>
+			<label>Kraft:</label> 
+			<label id="lblForceValue">---</label> 
 
 
 		</form>

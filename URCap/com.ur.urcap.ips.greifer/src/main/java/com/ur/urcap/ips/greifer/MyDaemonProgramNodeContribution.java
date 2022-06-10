@@ -119,6 +119,12 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		inputRadioButtonArray[3] = selectRadioButton4;
 		inputRadioButtonArray[4] = selectRadioButton5;
 
+		selectRadioButton1.setText("Befehl:");
+		selectRadioButton2.setText("Motor Power:");
+		selectRadioButton3.setText("Motor um");
+		selectRadioButton4.setText("Greifer schließen:");
+		selectRadioButton5.setText("Greifer öffnen");
+
 		deactivatableElementsArray[0] = custom_command_TextInput;
 		deactivatableElementsArray[1] = motor_power_select;
 		deactivatableElementsArray[2] = motor_drive_TextInput;
@@ -158,18 +164,25 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"" + getFromModel("custom_command_TextInput") + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==1){	//motor power
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".motor_power(\"" + getFromModel("motor_power_Select") + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"M1" + (8-Integer.parseInt(getFromModel("motor_power_Select"))) + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==2){	// motor move
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".motor_move(\"" + getFromModel("motor_drive_TextInput") + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G0 X" + getFromModel("motor_drive_TextInput") + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==3){	// motor close
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".motor_close(\"" + getFromModel("motor_close_TextInput") + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G2 F" + getFromModel("motor_close_TextInput") + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==4){	// motor open
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".motor_open()");
-			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G3\")");
+			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
 		}
+		writer.appendLine("if str_at(ips_greifer_return_value,0) == \"E\":");
+		writer.appendLine("\tpopup(str_cat(\"Errorcode: \", ips_greifer_return_value), \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"-1\":");
+		writer.appendLine("\tpopup(\"RS485: Fehlerhafte Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"-2\":");
+		writer.appendLine("\tpopup(\"RS485: Keine Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("end");
 
 		// writer.writeChildren();
 	}

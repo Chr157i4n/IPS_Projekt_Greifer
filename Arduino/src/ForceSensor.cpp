@@ -9,20 +9,43 @@ ForceSensor::ForceSensor(short address)
 
 float ForceSensor::getValue()
 {
-    short data = readDataFromSensor();
-    //Serial.print("I2C Sensor Data:");
-    //Serial.print(data);
-    //Serial.print("\n");
-    //delay(100); // Change this if you are getting values too quickly
-    float force = (float(data)-255)/512*450;
-    //force = force/FORCE_LEVER_RATIO;
+    float force = getValueRaw();
+    force = (float(data)-255)/512*450;
+    force = force/FORCE_LEVER_RATIO;
 
     return force;
 }
 
+float ForceSensor::getValueRaw(){
+    float data = -1;
+    short tries = 0;
+    while(data == -1){
+        tries++;
+        if(tries>=10)
+            return -1;
+        data = readDataFromSensor();
+
+    }
+    return data;
+}
+
+float ForceSensor::getValueAverage(int valueCount){
+    float value = 0;
+    for(int i=0; i<valueCount; i++){
+        float newvalue = getValue();
+        //Serial.println((String)"value: "+value);
+        if(newvalue == -1) return -1;
+        value += newvalue;
+        delayMicroseconds(100);
+    }
+    value /= valueCount;
+    //Serial.println((String)"value average: "+value);
+    return value;
+}
+
 short ForceSensor::readDataFromSensor()
 {
-    byte i2cPacketLength = 6;  // i2c packet length. Just need 6 bytes from each slave
+    int i2cPacketLength = 6;  // i2c packet length. Just need 6 bytes from each slave
     byte outgoingI2CBuffer[3]; // outgoing array buffer
     byte incomingI2CBuffer[6]; // incoming array buffer
 
@@ -35,9 +58,11 @@ short ForceSensor::readDataFromSensor()
     byte error = Wire.endTransmission(); // stop transmitting and check slave status
     if (error != 0)
         return -1;                              // if slave not exists or has error, return -1
+
     Wire.requestFrom(i2cAddress, i2cPacketLength); // require 6 bytes from slave
 
     byte incomeCount = 0;
+    unsigned long startTime = millis();
     while (incomeCount < i2cPacketLength) // slave may send less than requested
     {
         if (Wire.available())
@@ -48,6 +73,10 @@ short ForceSensor::readDataFromSensor()
         else
         {
             delayMicroseconds(10); // Wait 10us
+        }
+
+        if(millis() > startTime+timeout){
+            return -1;
         }
     }
 

@@ -27,30 +27,11 @@ public class XmlRpcMyDaemonInterface {
 
 	public boolean isReachable() {
 		try {
-			client.execute("get_title", new ArrayList<String>());
+			client.execute("send_message", new ArrayList<String>());
 			return true;
 		} catch (XmlRpcException e) {
 			return false;
 		}
-	}
-
-	public String getTitle() throws XmlRpcException, UnknownResponseException {
-		Object result = client.execute("get_title", new ArrayList<String>());
-		return processString(result);
-	}
-
-	public String setTitle(String title) throws XmlRpcException, UnknownResponseException {
-		ArrayList<String> args = new ArrayList<String>();
-		args.add(title);
-		Object result = client.execute("set_title", args);
-		return processString(result);
-	}
-
-	public String getMeasurementValueTest(String channel) throws XmlRpcException, UnknownResponseException {
-		ArrayList<String> args = new ArrayList<String>();
-		args.add(channel);
-		Object result = client.execute("get_measurement_value_test", args);
-		return processString(result);
 	}
 
 	public String sendMessage(String message) throws XmlRpcException, UnknownResponseException {
@@ -59,21 +40,10 @@ public class XmlRpcMyDaemonInterface {
 		Object result = client.execute("send_message", args);
 		return processString(result);
 	}
-	
 
-	public String getMeasurementValue(String channel) throws XmlRpcException, UnknownResponseException {
+	public String testConnection() throws XmlRpcException, UnknownResponseException {
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(channel);
-		Object result = client.execute("get_measurement_value", args);
-		return processString(result);
-	}
-
-	
-
-	public String getMessage(String name) throws XmlRpcException, UnknownResponseException {
-		ArrayList<String> args = new ArrayList<String>();
-		args.add(name);
-		Object result = client.execute("get_message", args);
+		Object result = client.execute("test_connection", args);
 		return processString(result);
 	}
 

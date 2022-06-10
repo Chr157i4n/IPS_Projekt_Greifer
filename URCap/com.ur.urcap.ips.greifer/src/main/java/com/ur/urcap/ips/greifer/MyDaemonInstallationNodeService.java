@@ -28,7 +28,7 @@ public class MyDaemonInstallationNodeService implements InstallationNodeService 
 
 	@Override
 	public InputStream getHTML() {
-		InputStream is = this.getClass().getResourceAsStream("/com/ur/urcap/ips/greifer/installation.html");
+		InputStream is = this.getClass().getResourceAsStream("/com/ur/urcap/ips/greifer/installationnode.html");
 		return is;
 	}
 }
