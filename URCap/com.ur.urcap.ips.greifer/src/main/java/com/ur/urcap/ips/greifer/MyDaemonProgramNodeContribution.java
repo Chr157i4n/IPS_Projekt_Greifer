@@ -119,6 +119,12 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		inputRadioButtonArray[3] = selectRadioButton4;
 		inputRadioButtonArray[4] = selectRadioButton5;
 
+		selectRadioButton1.setText("Befehl:");
+		selectRadioButton2.setText("Motor Power:");
+		selectRadioButton3.setText("Motor um");
+		selectRadioButton4.setText("Greifer schließen:");
+		selectRadioButton5.setText("Greifer öffnen");
+
 		deactivatableElementsArray[0] = custom_command_TextInput;
 		deactivatableElementsArray[1] = motor_power_select;
 		deactivatableElementsArray[2] = motor_drive_TextInput;
