@@ -9,7 +9,15 @@ ForceSensor::ForceSensor(short address)
 
 float ForceSensor::getValue()
 {
-    short data = -1;
+    float force = getValueRaw();
+    force = (float(data)-255)/512*450;
+    force = force/FORCE_LEVER_RATIO;
+
+    return force;
+}
+
+float ForceSensor::getValueRaw(){
+    float data = -1;
     short tries = 0;
     while(data == -1){
         tries++;
@@ -18,13 +26,7 @@ float ForceSensor::getValue()
         data = readDataFromSensor();
 
     }
-
-    //Serial.println((String)"data: "+data);
-
-    float force = (float(data)-255)/512*450;
-    force = force/FORCE_LEVER_RATIO;
-
-    return force;
+    return data;
 }
 
 float ForceSensor::getValueAverage(int valueCount){

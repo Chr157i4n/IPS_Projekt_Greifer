@@ -59,6 +59,14 @@ RS485 rs485(RS485_EN_TX, 115200);
 MotorDriver motorDriver(PIN_MOTORDRIVER_STEP, PIN_MOTORDRIVER_DIR, PIN_MOTORDRIVER_EN);
 ForceSensor forceSensor;
 
+float steps_to_mm(int steps){
+  return steps*200/SPINDLE_PITCH*GEAR_RATIO;
+}
+
+int mm_to_steps(float mm){
+  return round(mm/200*SPINDLE_PITCH/GEAR_RATIO);
+}
+
 float close(int force){
   motorDriver.setDirectionPin(true);
   float currentForce = forceSensor.getValue();
@@ -215,7 +223,7 @@ void parseLine(String message)
     }
 
     digitalWrite(pin, state);
-    rs485.sendAnswer((String)"pin_switched");
+    rs485.sendAnswer((String)"0");
   }
   else if(command == "M43") // Read I/O pin
   {
@@ -234,13 +242,17 @@ void parseLine(String message)
     int index_S_end = parameters.indexOf(' ', index_S);
     int sensor = parameters.substring(index_S+1, index_S_end).toInt();
     float value = -1;
-    if(sensor == 0){  //motor position
+    if(sensor == 0){  //motor position in steps
       value = motorDriver.getPosition();
-    }else if(sensor == 1){  //force sensor value
+    }else if(sensor == 1){  //motor position in mm
+      value = steps_to_mm(motorDriver.getPosition());
+    }else if(sensor == 2){  //force sensor value raw
+      value = forceSensor.getValueRaw();
+    }else if(sensor == 3){  //force sensor value
       value = forceSensor.getValue();
-    }else if(sensor == 2){  //endstop 1 value
+    }else if(sensor == 4){  //endstop 1 value
       value = digitalRead(PIN_END1);
-    }else if(sensor == 3){  //endstop 1 value
+    }else if(sensor == 5){  //endstop 2 value
       value = digitalRead(PIN_END2);
     }else{
       value = -2;
