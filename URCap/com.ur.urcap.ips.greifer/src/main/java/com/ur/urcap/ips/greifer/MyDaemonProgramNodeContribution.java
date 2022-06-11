@@ -39,15 +39,32 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Input(id = "custom_command_TextInput")
 	private InputTextField custom_command_TextInput;
 
+	@Input(id = "custom_command_TextInput")
+	public void onTextChange1(InputEvent event){
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			saveAllToModel();
+		}
+	}
+
 	@Select(id = "motor_power_Select")
 	private SelectDropDownList motor_power_select;
+	
+	@Select(id = "motor_power_Select")
+	public void onDropDownChange1(SelectEvent event){
+		if (event.getEvent() == SelectEvent.EventType.ON_SELECT){
+			saveAllToModel();
+		}
+		
+	}
 
 	@Input(id = "command_Choice1")
 	private InputRadioButton selectRadioButton1;
 
 	@Input(id = "command_Choice1")
 	public void onChoiceChange1(InputEvent event) {
-		changeChoice();
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			changeChoice();
+		}
 	}
 
 	@Input(id = "command_Choice2")
@@ -55,7 +72,9 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "command_Choice2")
 	public void onChoiceChange2(InputEvent event) {
-		changeChoice();
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			changeChoice();
+		}
 	}
 
 	@Input(id = "command_Choice3")
@@ -63,7 +82,9 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "command_Choice3")
 	public void onChoiceChange3(InputEvent event) {
-		changeChoice();
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			changeChoice();
+		}
 	}
 
 	@Input(id = "command_Choice4")
@@ -71,7 +92,9 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "command_Choice4")
 	public void onChoiceChange4(InputEvent event) {
-		changeChoice();
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			changeChoice();
+		}
 	}
 
 	@Input(id = "command_Choice5")
@@ -79,7 +102,9 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "command_Choice5")
 	public void onChoiceChange5(InputEvent event) {
-		changeChoice();
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			changeChoice();
+		}
 	}
 
 	@Input(id = "command_Choice6")
@@ -94,10 +119,24 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "motor_drive_NumberInput")
 	private InputTextField motor_drive_TextInput;
-
+	
+	@Input(id = "motor_drive_NumberInput")
+	public void onTextChange2(InputEvent event){
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			saveAllToModel();
+		}
+	}
+	
 	@Input(id = "motor_close_NumberInput")
 	private InputTextField motor_close_TextInput;
 
+	@Input(id = "motor_close_NumberInput")
+	public void onTextChange3(InputEvent event){
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			saveAllToModel();
+		}
+	}
+  
 	private InputRadioButton[] inputRadioButtonArray = new InputRadioButton[6];
 	private HTMLComponent[] deactivatableElementsArray = new HTMLComponent[4];
 
@@ -106,6 +145,8 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		for(int i = 0; i < deactivatableElementsArray.length; i++){
 			deactivatableElementsArray[i].setEnabled(choiceNumber == i);
 		}
+
+		saveAllToModel();
 	}
 
 	private void showPic(String picName) {
@@ -242,6 +283,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	}
 
 	private void saveAllToModel(){
+		if (getSelectedRadioButtonIndex() != -1) {
 		System.out.println("saving all to Model");
 		setToModel("custom_command_TextInput", custom_command_TextInput.getText());
 		setToModel("motor_power_Select", Integer.toString(motor_power_select.getSelectedIndex()));
@@ -249,6 +291,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		setToModel("motor_close_TextInput", motor_close_TextInput.getText());
 				
 		setToModel("command_select_RadioButton", Integer.toString(getSelectedRadioButtonIndex()));
+		}
 	}
 
 	private int getSelectedRadioButtonIndex() {
