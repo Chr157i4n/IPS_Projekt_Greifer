@@ -107,6 +107,16 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		}
 	}
 
+	@Input(id = "command_Choice6")
+	private InputRadioButton selectRadioButton6;
+
+	@Input(id = "command_Choice6")
+	public void onChoiceChange6(InputEvent event) {
+		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+			changeChoice();
+		}
+	}
+
 	@Input(id = "motor_drive_NumberInput")
 	private InputTextField motor_drive_TextInput;
 	
@@ -126,8 +136,8 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			saveAllToModel();
 		}
 	}
-
-	private InputRadioButton[] inputRadioButtonArray = new InputRadioButton[5];
+  
+	private InputRadioButton[] inputRadioButtonArray = new InputRadioButton[6];
 	private HTMLComponent[] deactivatableElementsArray = new HTMLComponent[4];
 
 	private void changeChoice() {
@@ -159,12 +169,14 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		inputRadioButtonArray[2] = selectRadioButton3;
 		inputRadioButtonArray[3] = selectRadioButton4;
 		inputRadioButtonArray[4] = selectRadioButton5;
+		inputRadioButtonArray[5] = selectRadioButton6;
 
 		selectRadioButton1.setText("Befehl:");
 		selectRadioButton2.setText("Motor Power:");
 		selectRadioButton3.setText("Motor um");
 		selectRadioButton4.setText("Greifer schließen:");
-		selectRadioButton5.setText("Greifer öffnen");
+		selectRadioButton5.setText("Greifer etwas öffnen");
+		selectRadioButton6.setText("Greifer komplett öffnen");
 
 		deactivatableElementsArray[0] = custom_command_TextInput;
 		deactivatableElementsArray[1] = motor_power_select;
@@ -216,8 +228,19 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		}else if(selectedCommandIndex==4){	// motor open
 			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G3\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
+		}else if(selectedCommandIndex==5){	// motor open
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G28\")");
+			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
 		}
-		writer.appendLine("if str_at(ips_greifer_return_value,0) == \"E\":");
+		writer.appendLine("elif ips_greifer_return_value == \"E10\":");
+		writer.appendLine("\tpopup(\"Greifer: Sensor Kommunikationsfehler\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"E20\":");
+		writer.appendLine("\tpopup(\"Greifer: Befehl nicht verfügbar\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"E30\":");
+		writer.appendLine("\tpopup(\"Greifer: Befehlsparameter fehlerhaft\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"W40\":");
+		writer.appendLine("\tpopup(\"Greifer: Position außerhalb von Limit\", \"Greifer Warnung\", True, False, blocking=True)");
+		writer.appendLine("elif str_at(ips_greifer_return_value,0) == \"E\":");
 		writer.appendLine("\tpopup(str_cat(\"Errorcode: \", ips_greifer_return_value), \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"-1\":");
 		writer.appendLine("\tpopup(\"RS485: Fehlerhafte Antwort\", \"Greifer Fehler\", False, True, blocking=True)");

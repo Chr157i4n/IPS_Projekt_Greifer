@@ -50,6 +50,7 @@ Error Codes:
 E10   -   Sensor communication error
 E20   -   command not available
 E30   -   parameter error
+W40   -   out of Bound warning
 
 */
 
@@ -72,11 +73,11 @@ float close(int force){
   float currentForce = forceSensor.getValue();
   while(currentForce < force){
     rs485.keepAlive();
-    if(motorDriver.makeAStep() == -1) break;
+    if(motorDriver.makeAStep() == -1) return -1;
     delay(MOTOR_SPEED_DELAY);
     currentForce = forceSensor.getValueAverage(2);
     if(currentForce == -1){
-      return -1;
+      return -2;
     }
   }
   return currentForce;
@@ -87,13 +88,13 @@ float open(int force = 10, int steps_afterwards=800){
   float currentForce = forceSensor.getValue();
   while(currentForce > force){
     rs485.keepAlive();
-    if(motorDriver.makeAStep() == -1) break;
+    if(motorDriver.makeAStep() == -1) return -1;
     delay(MOTOR_SPEED_DELAY);
     currentForce = forceSensor.getValue();
   }
   for(int i=0; i<steps_afterwards; i++){
     rs485.keepAlive();
-    if(motorDriver.makeAStep() == -1) break;
+    if(motorDriver.makeAStep() == -1) return -1;
     delay(MOTOR_SPEED_DELAY);
   }
   currentForce = forceSensor.getValue();
@@ -106,7 +107,7 @@ long move(long steps){
   if(steps<0) steps=-steps;
   for(int i=0; i<steps; i++){
     rs485.keepAlive();
-    if(motorDriver.makeAStep() == -1) break;
+    if(motorDriver.makeAStep() == -1) return -1;
     delay(1);
   }
   return steps;
@@ -161,8 +162,12 @@ void parseLine(String message)
     }else if(index_S>=0){
       int index_S_end = parameters.indexOf(' ', index_S);
       String move_amount_steps = parameters.substring(index_S+1, index_S_end);
-      int steps = move(move_amount_steps.toInt());
-      rs485.sendAnswer((String)steps);
+      int return_value = move(move_amount_steps.toInt());
+      if(return_value == -1){
+        rs485.sendWarning((String)"40");
+      }else{
+        rs485.sendAnswer((String)return_value);
+      }
     }else{
       rs485.sendError((String)"30");
     }
@@ -171,27 +176,29 @@ void parseLine(String message)
     int index_F = parameters.indexOf('F');
     if(index_F>=0){
       String move_amount_force = parameters.substring(index_F+1);
-      float actual_force = close(move_amount_force.toInt());
-      if(actual_force == -1){
+      float return_value = close(move_amount_force.toInt());
+      if(return_value == -1){
+        rs485.sendWarning((String)"40");
+      }else if(return_value == -2){
         rs485.sendError((String)"10");
       }else{
-        rs485.sendAnswer((String)actual_force);
+        rs485.sendAnswer((String)return_value);
       }
     }else{
       rs485.sendError((String)"30");
     }
   }else if(command == "G3") // open
   {
-    float actual_force = open();
-    rs485.sendAnswer((String)actual_force);
+    float return_value = open();
+    if(return_value == -1){
+        rs485.sendWarning((String)"40");
+    }else{
+      rs485.sendAnswer((String)return_value);
+    }
   }else if(command == "G28") // open
   {
     float status = home();
-    if(status == -1){
-      rs485.sendError((String)"10");
-    }else{
-      rs485.sendAnswer((String)"0");
-    }
+    rs485.sendAnswer((String)status);
   }else if(command == "M17") // enable Motor Output
   {
     motorDriver.setMotorEnabled(true);

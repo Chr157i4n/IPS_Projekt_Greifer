@@ -21,6 +21,8 @@ class RS485
 
     void sendError(String message);
 
+    void sendWarning(String message);
+
     void keepAlive(){
         if(millis() > lastKeepAlive+1000){
             sendKeepAlive();
