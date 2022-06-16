@@ -331,9 +331,13 @@ void loop()
   delay(1);
 
   // parseLine("M17");
+  // parseLine("G28");
   // parseLine("G2 F20");
   // delay(4000);
   // parseLine("G3");
+  // parseLine("G2 F20");
+  // parseLine("G28");
+  // parseLine("G0 X2");
   // parseLine("M18");
   // delay(10000);
 
@@ -345,5 +349,9 @@ void loop()
   // parseLine("G0 X-30");
   // parseLine("M18");
   // delay(5000);
+
+  // parseLine("M44 S2");
+  // parseLine("M44 S3");
+  // delay(1000);
 
 }
