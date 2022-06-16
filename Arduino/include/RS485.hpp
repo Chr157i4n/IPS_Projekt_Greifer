@@ -11,7 +11,7 @@ class RS485
     * constructor of the class
     * the number of the pins for tx and rx is needed as parameter
     */
-    RS485(int pin_EnTxPin, int baudrate = 19200, int pin_Tx = -1, int pin_Rx = -1);
+    RS485(int pin_EnTxPin, long baudrate = 115200, int pin_Tx = -1, int pin_Rx = -1);
 
     void sendMessage(String message);
 
