@@ -156,9 +156,12 @@ void parseLine(String message)
     if(index_X>=0){
       int index_X_end = parameters.indexOf(' ', index_X);
       String move_amount_mm = parameters.substring(index_X+1, index_X_end);
-      long steps = round(move_amount_mm.toFloat()*200/SPINDLE_PITCH*GEAR_RATIO);
-      steps = move(steps);
-      rs485.sendAnswer((String)steps);
+      long return_value = move(round(move_amount_mm.toFloat()*200/SPINDLE_PITCH*GEAR_RATIO));
+      if(return_value == -1){
+        rs485.sendWarning((String)"40");
+      }else{
+        rs485.sendAnswer((String)return_value);
+      }
     }else if(index_S>=0){
       int index_S_end = parameters.indexOf(' ', index_S);
       String move_amount_steps = parameters.substring(index_S+1, index_S_end);
@@ -335,11 +338,11 @@ void loop()
 
   // parseLine("M17");
   // parseLine("G28");
+  // delay(1000);
   // parseLine("G0 X40");
+  // delay(1000);
   // parseLine("G0 X-40");
   // parseLine("M18");
   // delay(5000);
 
-  // forceSensor.getValueAverage();
-  // delay(10);
 }
