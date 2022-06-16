@@ -12,9 +12,10 @@
 #define SPINDLE_PITCH 1.5
 #define GEAR_RATIO 2
 #define MOTOR_SPEED_DELAY 1
+#define TWO_GRIPPER_JAWS_FACTOR 2
 
 #define LIMIT_MIN_MM 0
-#define LIMIT_MAX_MM 35
+#define LIMIT_MAX_MM 48
 
 #define PIN_END1 8
 #define PIN_END2 7
@@ -61,11 +62,11 @@ MotorDriver motorDriver(PIN_MOTORDRIVER_STEP, PIN_MOTORDRIVER_DIR, PIN_MOTORDRIV
 ForceSensor forceSensor;
 
 float steps_to_mm(int steps){
-  return steps*200/SPINDLE_PITCH*GEAR_RATIO;
+  return steps/200*SPINDLE_PITCH/GEAR_RATIO*TWO_GRIPPER_JAWS_FACTOR;
 }
 
 int mm_to_steps(float mm){
-  return round(mm/200*SPINDLE_PITCH/GEAR_RATIO);
+  return round(mm*200/SPINDLE_PITCH*GEAR_RATIO/TWO_GRIPPER_JAWS_FACTOR);
 }
 
 float close(int force){
@@ -156,7 +157,7 @@ void parseLine(String message)
     if(index_X>=0){
       int index_X_end = parameters.indexOf(' ', index_X);
       String move_amount_mm = parameters.substring(index_X+1, index_X_end);
-      long return_value = move(round(move_amount_mm.toFloat()*200/SPINDLE_PITCH*GEAR_RATIO));
+      long return_value = move(mm_to_steps(move_amount_mm.toFloat()));
       if(return_value == -1){
         rs485.sendWarning((String)"40");
       }else{
@@ -302,8 +303,8 @@ void setup()
   Serial.println("---");
 
   Limit motor_limit;
-  motor_limit.min = LIMIT_MIN_MM*200/SPINDLE_PITCH*GEAR_RATIO;
-  motor_limit.max = LIMIT_MAX_MM*200/SPINDLE_PITCH*GEAR_RATIO;
+  motor_limit.min = mm_to_steps(LIMIT_MIN_MM);
+  motor_limit.max = mm_to_steps(LIMIT_MAX_MM);
   motorDriver.setLimit(motor_limit);
 
   Wire.begin();
@@ -339,9 +340,9 @@ void loop()
   // parseLine("M17");
   // parseLine("G28");
   // delay(1000);
-  // parseLine("G0 X40");
+  // parseLine("G0 X30");
   // delay(1000);
-  // parseLine("G0 X-40");
+  // parseLine("G0 X-30");
   // parseLine("M18");
   // delay(5000);
 
