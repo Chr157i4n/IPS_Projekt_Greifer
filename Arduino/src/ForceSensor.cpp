@@ -10,7 +10,7 @@ ForceSensor::ForceSensor(short address)
 float ForceSensor::getValue()
 {
     float force = getValueRaw();
-    force = (float(data)-255)/512*450;
+    force = (float(force)-255)/512*450;
     force = force/FORCE_LEVER_RATIO;
 
     return force;

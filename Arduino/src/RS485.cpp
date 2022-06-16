@@ -1,6 +1,6 @@
 #include "RS485.hpp"
 
-RS485::RS485(int pin_EnTxPin, int baudrate, int pin_Tx, int pin_Rx)
+RS485::RS485(int pin_EnTxPin, long baudrate, int pin_Tx, int pin_Rx)
 {
     _pin_Tx = pin_Tx;
     _pin_Rx = pin_Rx;
