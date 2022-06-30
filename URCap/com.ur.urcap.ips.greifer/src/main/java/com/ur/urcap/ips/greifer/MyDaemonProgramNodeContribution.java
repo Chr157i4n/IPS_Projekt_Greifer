@@ -234,6 +234,8 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		writer.appendLine("\tpopup(\"RS485: Fehlerhafte Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"-2\":");
 		writer.appendLine("\tpopup(\"RS485: Keine Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif ips_greifer_return_value == \"-3\":");
+		writer.appendLine("\tpopup(\"RS485: Keine Nachricht\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("end");
 
 		// writer.writeChildren();
