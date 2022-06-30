@@ -191,10 +191,10 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 
 		if(state == DaemonContribution.State.RUNNING){
 			try {				
-				String position = xmlRpcDaemonInterface.sendMessage("M44 S0");
+				String position = xmlRpcDaemonInterface.sendMessage("M44 S1");
 				positionValueLabel.setText(position.substring(1));
 
-				String force = xmlRpcDaemonInterface.sendMessage("M44 S1");
+				String force = xmlRpcDaemonInterface.sendMessage("M44 S3");
 				forceValueLabel.setText(force.substring(1));
 			} catch(Exception e){
 				System.err.println("Error while updating position and force:\n"+e.toString());
