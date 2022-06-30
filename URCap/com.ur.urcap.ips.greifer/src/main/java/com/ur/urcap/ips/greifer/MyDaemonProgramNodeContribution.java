@@ -41,7 +41,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "custom_command_TextInput")
 	public void onTextChange1(InputEvent event){
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			saveAllToModel();
 		}
 	}
@@ -50,8 +50,8 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private SelectDropDownList motor_power_select;
 	
 	@Select(id = "motor_power_Select")
-	public void onDropDownChange1(SelectEvent event){
-		if (event.getEvent() == SelectEvent.EventType.ON_SELECT){
+	public void onDropDownChange1(InputEvent event){
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE){
 			saveAllToModel();
 		}
 		
@@ -61,60 +61,48 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private InputRadioButton selectRadioButton1;
 
 	@Input(id = "command_Choice1")
-	public void onChoiceChange1(InputEvent event) {
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
-			changeChoice();
-		}
+	public void onChoiceChange1(SelectEvent event) {
+		changeChoice();
 	}
 
 	@Input(id = "command_Choice2")
 	private InputRadioButton selectRadioButton2;
 
 	@Input(id = "command_Choice2")
-	public void onChoiceChange2(InputEvent event) {
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
-			changeChoice();
-		}
+	public void onChoiceChange2(SelectEvent event) {
+		changeChoice();
 	}
 
 	@Input(id = "command_Choice3")
 	private InputRadioButton selectRadioButton3;
 
 	@Input(id = "command_Choice3")
-	public void onChoiceChange3(InputEvent event) {
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
-			changeChoice();
-		}
+	public void onChoiceChange3(SelectEvent event) {
+		changeChoice();
 	}
 
 	@Input(id = "command_Choice4")
 	private InputRadioButton selectRadioButton4;
 
 	@Input(id = "command_Choice4")
-	public void onChoiceChange4(InputEvent event) {
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
-			changeChoice();
-		}
+	public void onChoiceChange4(SelectEvent event) {
+		changeChoice();
 	}
 
 	@Input(id = "command_Choice5")
 	private InputRadioButton selectRadioButton5;
 
 	@Input(id = "command_Choice5")
-	public void onChoiceChange5(InputEvent event) {
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
-			changeChoice();
-		}
+	public void onChoiceChange5(SelectEvent event) {
+		changeChoice();
 	}
 
 	@Input(id = "command_Choice6")
 	private InputRadioButton selectRadioButton6;
 
 	@Input(id = "command_Choice6")
-	public void onChoiceChange6(InputEvent event) {
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
-			changeChoice();
-		}
+	public void onChoiceChange6(SelectEvent event) {
+		changeChoice();
 	}
 
 	@Input(id = "motor_drive_NumberInput")
@@ -122,7 +110,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	
 	@Input(id = "motor_drive_NumberInput")
 	public void onTextChange2(InputEvent event){
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			saveAllToModel();
 		}
 	}
@@ -132,7 +120,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	@Input(id = "motor_close_NumberInput")
 	public void onTextChange3(InputEvent event){
-		if (event.getEvent() == InputEvent.EventType.ON_SELECT) {
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			saveAllToModel();
 		}
 	}
@@ -232,7 +220,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G28\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
 		}
-		writer.appendLine("elif ips_greifer_return_value == \"E10\":");
+		writer.appendLine("if ips_greifer_return_value == \"E10\":");
 		writer.appendLine("\tpopup(\"Greifer: Sensor Kommunikationsfehler\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"E20\":");
 		writer.appendLine("\tpopup(\"Greifer: Befehl nicht verfügbar\", \"Greifer Fehler\", False, True, blocking=True)");

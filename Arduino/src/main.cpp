@@ -11,11 +11,12 @@
 #define ENDSTOP_PIN 8
 #define SPINDLE_PITCH 1.5
 #define GEAR_RATIO 2
-#define MOTOR_SPEED_DELAY 1
+#define MOTOR_SPEED_DELAY 400
+#define FORCESENSOR_STEP_INTERVAL 10
 #define TWO_GRIPPER_JAWS_FACTOR 2
 
 #define LIMIT_MIN_MM 0
-#define LIMIT_MAX_MM 48
+#define LIMIT_MAX_MM 46
 
 #define PIN_END1 8
 #define PIN_END2 7
@@ -72,13 +73,21 @@ int mm_to_steps(float mm){
 float close(int force){
   motorDriver.setDirectionPin(true);
   float currentForce = forceSensor.getValue();
+
+  int stepCount = 0;
   while(currentForce < force){
+    stepCount++;
     rs485.keepAlive();
     if(motorDriver.makeAStep() == -1) return -1;
-    delay(MOTOR_SPEED_DELAY);
-    currentForce = forceSensor.getValueAverage(2);
-    if(currentForce == -1){
-      return -2;
+    delayMicroseconds(MOTOR_SPEED_DELAY);
+
+    if (stepCount % FORCESENSOR_STEP_INTERVAL == 0){
+      currentForce = forceSensor.getValueAverage(1);
+      if (currentForce == -1){
+        return -2;
+      }
+    } else {
+      delayMicroseconds(MOTOR_SPEED_DELAY);
     }
   }
   return currentForce;
@@ -87,16 +96,26 @@ float close(int force){
 float open(int force = 10, int steps_afterwards=800){
   motorDriver.setDirectionPin(false);
   float currentForce = forceSensor.getValue();
+
+  int stepCount = 0;
   while(currentForce > force){
+    stepCount++;
     rs485.keepAlive();
     if(motorDriver.makeAStep() == -1) return -1;
-    delay(MOTOR_SPEED_DELAY);
-    currentForce = forceSensor.getValue();
+    
+    if(stepCount % FORCESENSOR_STEP_INTERVAL == 0){
+      currentForce = forceSensor.getValue();
+      if (currentForce == -1){
+        return -2;
+      }
+    }else{
+      delayMicroseconds(MOTOR_SPEED_DELAY);
+    }
   }
   for(int i=0; i<steps_afterwards; i++){
     rs485.keepAlive();
     if(motorDriver.makeAStep() == -1) return -1;
-    delay(MOTOR_SPEED_DELAY);
+    delayMicroseconds(MOTOR_SPEED_DELAY);
   }
   currentForce = forceSensor.getValue();
   return currentForce;
@@ -120,7 +139,7 @@ int home(int steps_afterwards=400){
     while(endstop_state){
       rs485.keepAlive();
       motorDriver.makeAStep(true);
-      delay(MOTOR_SPEED_DELAY);
+      delayMicroseconds(MOTOR_SPEED_DELAY);
       endstop_state = digitalRead(ENDSTOP_PIN);
       //Serial.println((String)"Pinstate: "+endstop_state);
     }
@@ -128,7 +147,7 @@ int home(int steps_afterwards=400){
     for(int i=0; i<steps_afterwards; i++){
       rs485.keepAlive();
       motorDriver.makeAStep(true);
-      delay(MOTOR_SPEED_DELAY);
+      delayMicroseconds(MOTOR_SPEED_DELAY);
     }
     motorDriver.setPosition(0);
   return 0;
