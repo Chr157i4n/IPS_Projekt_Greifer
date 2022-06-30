@@ -1,78 +1,81 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>IPS_Greifer</title>
-		<style>
-			select {
-				display: inline-block;
-				width: 200px;
-				height: 28px;
-			}
 
-			label {
-				display: inline-block;
-				width: 150px;
-				height: 28px;
-			}
+<head>
+	<title>IPS_Greifer</title>
+	<style>
+		select {
+			display: inline-block;
+			width: 200px;
+			height: 28px;
+		}
 
-			#preview {
-				display: block;
-				padding: 35px 20px 20px 0px;
-			}
+		label {
+			display: inline-block;
+			width: 150px;
+			height: 28px;
+		}
 
-			#header {
-				padding: 0px 0px 20px 0px;
-			}
+		#preview {
+			display: block;
+			padding: 35px 20px 20px 0px;
+		}
 
-			#logo {
-				padding: 0px 0px 0px 0px;
-			}
+		#header {
+			padding: 0px 0px 20px 0px;
+		}
 
-		</style>
-	</head>
-	<body>
-		<div id="logoDiv">
-			<img src="none.png" id="logo" style="width: 438px; height: 144px"/>
-		</div>
-		<form>
-			<!-- <img id="logo"/> -->
+		#logo {
+			padding: 0px 0px 0px 0px;
+		}
+	</style>
+</head>
 
-			<br/>
-			<div id="command_div">
-				<h3 id="command_header">Befehl</h3><br \>
+<body>
+	<div id="logoDiv">
+		<img src="none.png" id="logo" style="width: 438px; height: 144px" />
+	</div>
+	<form>
+		<!-- <img id="logo"/> -->
 
-				<div>
-					<input type="radio" id="command_Choice1" name="command" value="custom_command">
-					<input id="custom_command_TextInput" type="text" style="width: 200px; height: 28px;"/>
-					<br/>
-				
-					<input type="radio" id="command_Choice2" name="command" value="motor_power">
-					<select id="motor_power_Select" style="width: 200px; height: 28px;">
+		<br />
+		<div id="command_div">
+			<h3 id="command_header">Befehl</h3><br />
+
+			<div>
+				<input type="radio" id="command_Choice1" name="command" value="custom_command">
+				<input id="custom_command_TextInput" type="text" style="width: 200px; height: 28px;" />
+				<br />
+
+				<input type="radio" id="command_Choice2" name="command" value="motor_power">
+				<select id="motor_power_Select" style="width: 200px; height: 28px;">
 					<option>Dropdown list will be empty, because Option does not work</option>
-					</select>
-					<br/>
+				</select>
+				<br />
 
-					<input type="radio" id="command_Choice3" name="command" value="motor_drive">
-					<input id="motor_drive_NumberInput" type="number" step="1" style="width: 200px; height: 28px;"/>
-					<label>mm verfahren</label>
-					<br/>
+				<input type="radio" id="command_Choice3" name="command" value="motor_drive">
+				<input id="motor_drive_NumberInput" type="number" step="1" style="width: 200px; height: 28px;" />
+				<label>mm verfahren</label>
+				<br />
 
-					<input type="radio" id="command_Choice4" name="command" value="motor_close">
-					<input id="motor_close_NumberInput" type="number" step="1" min="0" max="100" style="width: 200px; height: 28px;"/>
-					<label>N </label>
-					<br/>
+				<input type="radio" id="command_Choice4" name="command" value="motor_close">
+				<input id="motor_close_NumberInput" type="number" step="1" min="0" max="100"
+					style="width: 200px; height: 28px;" />
+				<label>N </label>
+				<br />
 
-					<input type="radio" id="command_Choice5" name="command" value="motor_open">
-					<br/>
+				<input type="radio" id="command_Choice5" name="command" value="motor_open">
+				<br />
 
-					<input type="radio" id="command_Choice6" name="command" value="motor_open2">
-					<br/>
-				</div>
-
+				<input type="radio" id="command_Choice6" name="command" value="motor_open2">
+				<br />
 			</div>
-			
-		</form>
 
-		
-	</body>
+		</div>
+
+	</form>
+
+
+</body>
+
 </html>
