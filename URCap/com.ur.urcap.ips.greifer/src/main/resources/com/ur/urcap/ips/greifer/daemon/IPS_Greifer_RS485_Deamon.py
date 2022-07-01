@@ -31,7 +31,7 @@ def init():
 
 
 def send_message(message):
-	if (!ser.isOpen()):
+	if (ser.isOpen() == False):
 		ser.open()
 	if str(message):
 		log("command: \""+str(message)+"\"")
