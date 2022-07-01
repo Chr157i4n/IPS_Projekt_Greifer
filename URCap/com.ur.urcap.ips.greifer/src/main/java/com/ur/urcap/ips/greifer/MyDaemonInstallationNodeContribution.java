@@ -21,7 +21,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	private static final String ENABLED_KEY = "enabled";
 	private static final String DEFAULT_VALUE = "HelloWorld";
 
-	private DataModel model;
+	public DataModel model;
 	private final MyDaemonDaemonService daemonService;
 	private XmlRpcMyDaemonInterface xmlRpcDaemonInterface;
 	private Timer uiTimer;
@@ -33,46 +33,40 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		applyDesiredDaemonStatus();
 	}
 
-	@Input(id = "txtFldSendMessage")
-	private InputTextField sendMessageTextField;
-
-	@Input(id = "txtFldmaxForce")
+	@Input(id = "max_force")
 	private InputTextField maxForceTextField;
 
-	@Input(id = "btnEnableDaemon")
+	@Input(id = "enable_daemon")
 	private InputButton enableDaemonButton;
 
-	@Input(id = "btnDisableDaemon")
+	@Input(id = "disable_daemon")
 	private InputButton disableDaemonButton;
 
-	@Input(id = "btnTestConnection")
-	private InputButton testConnectionButton;
+	@Input(id = "send_message_txtfld")
+	private InputTextField sendMessageTextField;
 
-	@Input(id = "btnSendMessage")
+	@Input(id = "send_message_btn")
 	private InputButton sendMessageButton;
 
-	@Input(id = "btnMotorOn")
-	private InputButton motorOnButton;
-
-	@Input(id = "btnMotorOff")
-	private InputButton motorOffButton;
-
-	@Label(id = "lblDaemonStatus")
-	private LabelComponent daemonStatusLabel;
-
-	@Label(id = "lblTestConnection")
-	private LabelComponent testConnectionLabel;
-
-	@Label(id = "lblSendMessage")
+	@Label(id = "send_message_lbl")
 	private LabelComponent sendMessageLabel;
 
-	@Label(id = "lblPositionValue")
+	@Input(id = "motor_on")
+	private InputButton motorOnButton;
+
+	@Input(id = "motor_off")
+	private InputButton motorOffButton;
+
+	@Label(id = "daemon_status")
+	private LabelComponent daemonStatusLabel;
+
+	@Label(id = "position_value")
 	private LabelComponent positionValueLabel;
 
-	@Label(id = "lblForceValue")
+	@Label(id = "force_value")
 	private LabelComponent forceValueLabel;
 	
-	@Input(id = "btnEnableDaemon")
+	@Input(id = "enable_daemon")
 	public void onStartClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			setDaemonEnabled(true);
@@ -80,7 +74,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
-	@Input(id = "btnDisableDaemon")
+	@Input(id = "disable_daemon")
 	public void onStopClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			setDaemonEnabled(false);
@@ -88,19 +82,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
-	@Input(id = "btnTestConnection")
-	public void onTestConnectionClick(InputEvent event) {
-		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
-			try {
-				String value = xmlRpcDaemonInterface.testConnection();
-				testConnectionLabel.setText(value);
-			} catch(Exception e){
-				System.err.println("Error while testing connection:\n"+e.toString());
-			}
-		}
-	}
-
-	@Input(id = "btnSendMessage")
+	@Input(id = "send_message_btn")
 	public void onMessageSendClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
@@ -112,14 +94,14 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
-	@Input(id = "txtFldmaxForce")
+	@Input(id = "max_force")
 	public void onMaxForceChange(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			setToModel("max_force", maxForceTextField.getText());
 		}
 	}
 	
-	@Input(id = "btnMotorOn")
+	@Input(id = "motor_on")
 	public void onMotorOnClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
@@ -131,7 +113,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
-	@Input(id = "btnMotorOff")
+	@Input(id = "motor_off")
 	public void onMotorOffClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
 			try {
@@ -148,10 +130,10 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		System.out.println("Open View 1");
 		enableDaemonButton.setText("Daemon starten");
 		disableDaemonButton.setText("Daemon stoppen");
-		testConnectionButton.setText("Testen");
 		sendMessageButton.setText("Sende Nachricht");
 		motorOnButton.setText("Motor An");
 		motorOffButton.setText("Motor Aus");
+		maxForceTextField.setText(model.get("max_force", "0").toString());
 
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
 		uiTimer = new Timer(true);

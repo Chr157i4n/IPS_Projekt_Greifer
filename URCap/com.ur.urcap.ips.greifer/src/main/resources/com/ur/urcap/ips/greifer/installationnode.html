@@ -19,39 +19,37 @@
 	<body>
 		<h1>IPS Greifer Installation</h1>
 		<form>		
-			<input id="btnEnableDaemon" type="button" style="font-size: 18px;" />
-			<input id="btnDisableDaemon" type="button" style="font-size: 18px;" />
-			<div>&nbsp;</div>
-			<label id="lblDaemonStatus" style="width: 200px;">Daemonstatus</label>
-			<div>&nbsp;</div>
-			<input id="btnTestConnection" type="button" style="font-size: 18px;" />
-			<label id="lblTestConnection" style="width: 200px;">Antwort: </label>
-			<div>&nbsp;</div>
-			<br>
+			<input id="enable_daemon" type="button" style="font-size: 18px;" />
+			<input id="disable_daemon" type="button" style="font-size: 18px;" />
+			<br/>
+			<label id="daemon_status" style="width: 200px;">Daemonstatus</label>
+			<br/>
 			<label>Nachricht:</label> 
-			<br>
-			<input id="txtFldSendMessage" type="text"/>
-			<br>
-			<br>
-			<input id="btnSendMessage" type="button" style="font-size: 18px;" />
-			<br>
-			<label id="lblSendMessage" style="width: 500px;">Antwort: </label>
+			<br/>
+			<input id="send_message_txtfld" type="text"/>
+			<br/>
+			<br/>
+			<input id="send_message_btn" type="button" style="font-size: 18px;" />
+			<br/>
+			<label id="send_message_lbl" style="width: 500px;">Antwort: </label>
+			<br/>
 
-			<br>
+			<br/>
 			<label>maximale Kraft:</label> 
-			<br>
-			<input id="txtFldmaxForce" type="text"/>
+			<br/>
+			<input id="max_force" type="number"/>
+			<br/>
 
-			<br>
-			<input id="btnMotorOn" type="button" style="font-size: 18px;" />
-			<input id="btnMotorOff" type="button" style="font-size: 18px;" />
-			<br>
-			<br>
+			<br/>
+			<input id="motor_on" type="button" style="font-size: 18px;" />
+			<input id="motor_off" type="button" style="font-size: 18px;" />
+			<br/>
+			<br/>
 			<label>Position:</label> 
-			<label id="lblPositionValue">---</label> 
-			<br>
+			<label id="position_value">---</label> 
+			<br/>
 			<label>Kraft:</label> 
-			<label id="lblForceValue">---</label> 
+			<label id="force_value">---</label> 
 
 
 		</form>

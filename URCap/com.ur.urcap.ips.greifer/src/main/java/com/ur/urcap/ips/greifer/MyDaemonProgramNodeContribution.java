@@ -36,20 +36,20 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Img(id = "logo")
 	private ImgComponent logoImage;
 
-	@Input(id = "custom_command_TextInput")
-	private InputTextField custom_command_TextInput;
+	@Input(id = "custom_command_textinput")
+	private InputTextField customCommandTextInput;
 
-	@Input(id = "custom_command_TextInput")
+	@Input(id = "custom_command_textinput")
 	public void onTextChange1(InputEvent event){
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			saveAllToModel();
 		}
 	}
 
-	@Select(id = "motor_power_Select")
-	private SelectDropDownList motor_power_select;
+	@Select(id = "motor_power_select")
+	private SelectDropDownList motorPowerSelect;
 	
-	@Select(id = "motor_power_Select")
+	@Select(id = "motor_power_select")
 	public void onDropDownChange1(InputEvent event){
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE){
 			saveAllToModel();
@@ -57,76 +57,80 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		
 	}
 
-	@Input(id = "command_Choice1")
+	@Input(id = "command_choice1")
 	private InputRadioButton selectRadioButton1;
 
-	@Input(id = "command_Choice1")
+	@Input(id = "command_choice1")
 	public void onChoiceChange1(SelectEvent event) {
 		changeChoice();
 	}
 
-	@Input(id = "command_Choice2")
+	@Input(id = "command_choice2")
 	private InputRadioButton selectRadioButton2;
 
-	@Input(id = "command_Choice2")
+	@Input(id = "command_choice2")
 	public void onChoiceChange2(SelectEvent event) {
 		changeChoice();
 	}
 
-	@Input(id = "command_Choice3")
+	@Input(id = "command_choice3")
 	private InputRadioButton selectRadioButton3;
 
-	@Input(id = "command_Choice3")
+	@Input(id = "command_choice3")
 	public void onChoiceChange3(SelectEvent event) {
 		changeChoice();
 	}
 
-	@Input(id = "command_Choice4")
+	@Input(id = "command_choice4")
 	private InputRadioButton selectRadioButton4;
 
-	@Input(id = "command_Choice4")
+	@Input(id = "command_choice4")
 	public void onChoiceChange4(SelectEvent event) {
 		changeChoice();
 	}
 
-	@Input(id = "command_Choice5")
+	@Input(id = "command_choice5")
 	private InputRadioButton selectRadioButton5;
 
-	@Input(id = "command_Choice5")
+	@Input(id = "command_choice5")
 	public void onChoiceChange5(SelectEvent event) {
 		changeChoice();
 	}
 
-	@Input(id = "command_Choice6")
+	@Input(id = "command_choice6")
 	private InputRadioButton selectRadioButton6;
 
-	@Input(id = "command_Choice6")
+	@Input(id = "command_choice6")
 	public void onChoiceChange6(SelectEvent event) {
 		changeChoice();
 	}
 
-	@Input(id = "motor_drive_NumberInput")
-	private InputTextField motor_drive_TextInput;
+	@Input(id = "motor_drive_numberinput")
+	private InputTextField motorDriveTextInput;
 	
-	@Input(id = "motor_drive_NumberInput")
+	@Input(id = "motor_drive_numberinput")
 	public void onTextChange2(InputEvent event){
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			saveAllToModel();
 		}
 	}
 	
-	@Input(id = "motor_close_NumberInput")
-	private InputTextField motor_close_TextInput;
+	@Input(id = "motor_close_numberinput")
+	private InputTextField motorCloseTextInput;
 
-	@Input(id = "motor_close_NumberInput")
+	@Input(id = "motor_close_numberinput")
 	public void onTextChange3(InputEvent event){
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
-			if(Integer.parseInt(motor_close_TextInput.getText()) > 60){
-				motor_close_TextInput.setText("0");
+			int maxForce = Integer.parseInt(getInstallation().model.get("max_force", "0"));
+			if(Integer.parseInt(motorCloseTextInput.getText()) > maxForce){
+				motorCloseTextInput.setText("0");
 			}
 			saveAllToModel();
 		}
 	}
+
+	@Label(id = "motor_close_label")
+	private LabelComponent motorCloseLabel;
   
 	private InputRadioButton[] inputRadioButtonArray = new InputRadioButton[6];
 	private HTMLComponent[] deactivatableElementsArray = new HTMLComponent[4];
@@ -151,9 +155,10 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Override
 	public void openView() {
 
-		motor_power_select.removeAllItems();
-		motor_power_select.addItem("Aus");
-		motor_power_select.addItem("An");
+		motorPowerSelect.removeAllItems();
+		motorPowerSelect.addItem("Aus");
+		motorPowerSelect.addItem("An");
+
 
 		inputRadioButtonArray[0] = selectRadioButton1;
 		inputRadioButtonArray[1] = selectRadioButton2;
@@ -164,15 +169,16 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 		selectRadioButton1.setText("Befehl:");
 		selectRadioButton2.setText("Motor Power:");
-		selectRadioButton3.setText("Motor um");
+		selectRadioButton3.setText("Greiferbacken um");
 		selectRadioButton4.setText("Greifer schließen:");
 		selectRadioButton5.setText("Greifer etwas öffnen");
 		selectRadioButton6.setText("Greifer komplett öffnen");
+		motorCloseLabel.setText("N (max "+getInstallation().model.get("max_force", "0").toString()+" N)");
 
-		deactivatableElementsArray[0] = custom_command_TextInput;
-		deactivatableElementsArray[1] = motor_power_select;
-		deactivatableElementsArray[2] = motor_drive_TextInput;
-		deactivatableElementsArray[3] = motor_close_TextInput;
+		deactivatableElementsArray[0] = customCommandTextInput;
+		deactivatableElementsArray[1] = motorPowerSelect;
+		deactivatableElementsArray[2] = motorDriveTextInput;
+		deactivatableElementsArray[3] = motorCloseTextInput;
 
 		//changeChoice(1);
 
@@ -205,16 +211,16 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 		int selectedCommandIndex = Integer.parseInt(getFromModel("command_select_RadioButton", "0"));
 		if(selectedCommandIndex==0){	//custom command
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"" + getFromModel("custom_command_TextInput") + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"" + getFromModel("customCommandTextInput") + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==1){	//motor power
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"M1" + (8-Integer.parseInt(getFromModel("motor_power_Select"))) + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"M1" + (8-Integer.parseInt(getFromModel("motorPowerSelect"))) + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==2){	// motor move
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G0 X" + getFromModel("motor_drive_TextInput") + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G0 X" + getFromModel("motorDriveTextInput") + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==3){	// motor close
-			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G2 F" + getFromModel("motor_close_TextInput") + "\")");
+			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G2 F" + getFromModel("motorCloseTextInput") + "\")");
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");
 		}else if(selectedCommandIndex==4){	// motor open
 			writer.appendLine("ips_greifer_return_value = " + getInstallation().getXMLRPCVariable() + ".send_message(\"G3\")");
@@ -267,10 +273,10 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 
 	private void loadAllFormModel(){
 		System.out.println("loading all from Model");
-		custom_command_TextInput.setText(getFromModel("custom_command_TextInput"));
-		motor_power_select.selectItemAtIndex(Integer.parseInt(getFromModel("motor_power_Select", "0")));
-		motor_drive_TextInput.setText(getFromModel("motor_drive_TextInput", "0"));
-		motor_close_TextInput.setText(getFromModel("motor_close_TextInput", "0"));
+		customCommandTextInput.setText(getFromModel("customCommandTextInput"));
+		motorPowerSelect.selectItemAtIndex(Integer.parseInt(getFromModel("motorPowerSelect", "0")));
+		motorDriveTextInput.setText(getFromModel("motorDriveTextInput", "0"));
+		motorCloseTextInput.setText(getFromModel("motorCloseTextInput", "0"));
 		
 		inputRadioButtonArray[Integer.parseInt(getFromModel("command_select_RadioButton", "0"))].setSelected();
 	}
@@ -278,10 +284,10 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private void saveAllToModel(){
 		if (getSelectedRadioButtonIndex() != -1) {
 		System.out.println("saving all to Model");
-		setToModel("custom_command_TextInput", custom_command_TextInput.getText());
-		setToModel("motor_power_Select", Integer.toString(motor_power_select.getSelectedIndex()));
-		setToModel("motor_drive_TextInput", motor_drive_TextInput.getText());
-		setToModel("motor_close_TextInput", motor_close_TextInput.getText());
+		setToModel("customCommandTextInput", customCommandTextInput.getText());
+		setToModel("motorPowerSelect", Integer.toString(motorPowerSelect.getSelectedIndex()));
+		setToModel("motorDriveTextInput", motorDriveTextInput.getText());
+		setToModel("motorCloseTextInput", motorCloseTextInput.getText());
 				
 		setToModel("command_select_RadioButton", Integer.toString(getSelectedRadioButtonIndex()));
 		}
