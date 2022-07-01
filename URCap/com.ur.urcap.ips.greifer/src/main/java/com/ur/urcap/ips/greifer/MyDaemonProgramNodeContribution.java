@@ -120,7 +120,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			int maxForce = Integer.parseInt(getInstallation().model.get("max_force", "0"));
 			if(Integer.parseInt(motorCloseTextInput.getText()) > maxForce){
-				motorCloseTextInput.setText("0");
+				motorCloseTextInput.setText(maxForce.toString());
 			}
 			saveAllToModel();
 		}
