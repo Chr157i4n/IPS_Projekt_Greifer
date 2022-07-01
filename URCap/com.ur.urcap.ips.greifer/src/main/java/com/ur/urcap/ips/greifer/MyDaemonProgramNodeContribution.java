@@ -121,6 +121,9 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	@Input(id = "motor_close_NumberInput")
 	public void onTextChange3(InputEvent event){
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
+			if(Integer.parseInt(motor_close_TextInput.getText()) > 60){
+				motor_close_TextInput.setText("0");
+			}
 			saveAllToModel();
 		}
 	}

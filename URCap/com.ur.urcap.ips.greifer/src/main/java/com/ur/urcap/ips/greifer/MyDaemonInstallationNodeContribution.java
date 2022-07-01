@@ -36,6 +36,9 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Input(id = "txtFldSendMessage")
 	private InputTextField sendMessageTextField;
 
+	@Input(id = "txtFldmaxForce")
+	private InputTextField maxForceTextField;
+
 	@Input(id = "btnEnableDaemon")
 	private InputButton enableDaemonButton;
 
@@ -109,6 +112,13 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
+	@Input(id = "txtFldmaxForce")
+	public void onMaxForceChange(InputEvent event) {
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
+			setToModel("max_force", maxForceTextField.getText());
+		}
+	}
+	
 	@Input(id = "btnMotorOn")
 	public void onMotorOnClick(InputEvent event) {
 		if (event.getEventType() == InputEvent.EventType.ON_PRESSED) {
@@ -136,12 +146,12 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Override
 	public void openView() {
 		System.out.println("Open View 1");
-		enableDaemonButton.setText("Start Daemon");
-		disableDaemonButton.setText("Stop Daemon");
+		enableDaemonButton.setText("Daemon starten");
+		disableDaemonButton.setText("Daemon stoppen");
 		testConnectionButton.setText("Testen");
-		sendMessageButton.setText("Send Message");
-		motorOnButton.setText("Motor On");
-		motorOffButton.setText("Motor Off");
+		sendMessageButton.setText("Sende Nachricht");
+		motorOnButton.setText("Motor An");
+		motorOffButton.setText("Motor Aus");
 
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
 		uiTimer = new Timer(true);
@@ -253,6 +263,27 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 
 	public String getXMLRPCVariable(){
 		return XMLRPC_VARIABLE;
+	}
+
+	private String getFromModel(String key, String defaultValue) {
+		String value = model.get(key, defaultValue);
+
+		System.out.println("loaded key: "+key + "\t|\t" + "value: "+value);
+		return value;
+
+	}
+
+	private String getFromModel(String key) {
+		return getFromModel(key, "");
+	}
+
+	private void setToModel(String key, String value) {
+		System.out.println("saved key: "+key + "\t|\t" + "value: "+value);
+		if (value.equals("")) {
+			model.remove(key);
+		} else {
+			model.set(key, value);
+		}
 	}
 
 	public XmlRpcMyDaemonInterface getXmlRpcDaemonInterface() {return xmlRpcDaemonInterface; }
