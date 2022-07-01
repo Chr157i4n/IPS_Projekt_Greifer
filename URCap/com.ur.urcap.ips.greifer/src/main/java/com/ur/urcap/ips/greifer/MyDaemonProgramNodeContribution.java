@@ -50,18 +50,15 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private SelectDropDownList motorPowerSelect;
 	
 	@Select(id = "motor_power_select")
-	public void onDropDownChange1(InputEvent event){
-		if (event.getEventType() == InputEvent.EventType.ON_CHANGE){
-			saveAllToModel();
-		}
-		
+	public void onDropDownChange1(SelectEvent event){
+		saveAllToModel();		
 	}
 
 	@Input(id = "command_choice1")
 	private InputRadioButton selectRadioButton1;
 
 	@Input(id = "command_choice1")
-	public void onChoiceChange1(SelectEvent event) {
+	public void onChoiceChange1(InputEvent event) {
 		changeChoice();
 	}
 
@@ -69,7 +66,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private InputRadioButton selectRadioButton2;
 
 	@Input(id = "command_choice2")
-	public void onChoiceChange2(SelectEvent event) {
+	public void onChoiceChange2(InputEvent event) {
 		changeChoice();
 	}
 
@@ -77,7 +74,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private InputRadioButton selectRadioButton3;
 
 	@Input(id = "command_choice3")
-	public void onChoiceChange3(SelectEvent event) {
+	public void onChoiceChange3(InputEvent event) {
 		changeChoice();
 	}
 
@@ -85,7 +82,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private InputRadioButton selectRadioButton4;
 
 	@Input(id = "command_choice4")
-	public void onChoiceChange4(SelectEvent event) {
+	public void onChoiceChange4(InputEvent event) {
 		changeChoice();
 	}
 
@@ -93,7 +90,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private InputRadioButton selectRadioButton5;
 
 	@Input(id = "command_choice5")
-	public void onChoiceChange5(SelectEvent event) {
+	public void onChoiceChange5(InputEvent event) {
 		changeChoice();
 	}
 
@@ -101,7 +98,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	private InputRadioButton selectRadioButton6;
 
 	@Input(id = "command_choice6")
-	public void onChoiceChange6(SelectEvent event) {
+	public void onChoiceChange6(InputEvent event) {
 		changeChoice();
 	}
 
@@ -263,7 +260,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 	}
 
 	private void setToModel(String key, String value) {
-		System.out.println("saved key: "+key + "\t|\t" + "value: "+value);
+		System.out.println("saved value: "+value+"\t|\tkey: "+key);
 		if (value.equals("")) {
 			model.remove(key);
 		} else {

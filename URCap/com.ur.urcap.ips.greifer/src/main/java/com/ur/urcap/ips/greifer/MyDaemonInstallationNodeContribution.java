@@ -17,9 +17,7 @@ import java.util.TimerTask;
 
 public class MyDaemonInstallationNodeContribution implements InstallationNodeContribution {
 
-	private static final String XMLRPC_VARIABLE = "my_daemon";
-	private static final String ENABLED_KEY = "enabled";
-	private static final String DEFAULT_VALUE = "HelloWorld";
+	private static final String XMLRPC_VARIABLE = "ips_greifer_daemon";
 
 	public DataModel model;
 	private final MyDaemonDaemonService daemonService;
@@ -210,8 +208,6 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	@Override
 	public void generateScript(ScriptWriter writer) {
 		writer.globalVariable(XMLRPC_VARIABLE, "rpc_factory(\"xmlrpc\", \"http://127.0.0.1:40405/RPC2\")");
-		// Apply the settings to the daemon on program start in the Installation pre-amble
-		// writer.appendLine(XMLRPC_VARIABLE + ".set_title(\"" + getPopupTitle() + "\")");
 	}
 
 	private void applyDesiredDaemonStatus() {
@@ -236,11 +232,11 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 	}
 
 	private Boolean isDaemonEnabled() {
-		return model.get(ENABLED_KEY, true); //This daemon is enabled by default
+		return model.get("enabled", true); //This daemon is enabled by default
 	}
 
 	private void setDaemonEnabled(Boolean enable) {
-		model.set(ENABLED_KEY, enable);
+		model.set("enabled", enable);
 	}
 
 	public String getXMLRPCVariable(){
