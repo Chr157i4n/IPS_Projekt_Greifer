@@ -58,6 +58,9 @@ public class IPSGreiferInstallationNodeContribution implements InstallationNodeC
 	@Label(id = "daemon_status")
 	private LabelComponent daemonStatusLabel;
 
+	@Label(id = "gripper_status")
+	private LabelComponent gripperStatusLabel;
+
 	@Label(id = "position_value")
 	private LabelComponent positionValueLabel;
 
@@ -150,49 +153,40 @@ public class IPSGreiferInstallationNodeContribution implements InstallationNodeC
 
 	private void updateUI() {
 		System.out.println("Update UI");
-		DaemonContribution.State state = DaemonContribution.State.RUNNING;
-		try {
-			state =  daemonService.getDaemon().getState();
-		} catch (Exception e) {
+		boolean daemonRunning = false;
+		try {				
+			String answer = xmlRpcDaemonInterface.testConnection();
+			daemonRunning = true;
+		} catch(Exception e){
 			System.err.println("Error while getting daemon state");
-		}
-		
+			daemonRunning = false;
+		}		
 
-		if (state == DaemonContribution.State.RUNNING) {
+		if (daemonRunning) {
 			enableDaemonButton.setEnabled(false);
 			disableDaemonButton.setEnabled(true);
+			daemonStatusLabel.setText("Daemonstatus:  läuft");
 		} else {
 			enableDaemonButton.setEnabled(true);
 			disableDaemonButton.setEnabled(false);
+			daemonStatusLabel.setText("Daemonstatus:  läuft nicht");
 		}
 
-		enableDaemonButton.setEnabled(true);
-		disableDaemonButton.setEnabled(true);
-
-		String text = "";
-		switch (state) {
-		case RUNNING:
-			text = "Daemon läuft";
-			break;
-		case STOPPED:
-			text = "Daemon gestoppt";
-			break;
-		case ERROR:
-			text = "Daemon fehler";
-			break;
-		}
-		daemonStatusLabel.setText(text);
-
-		if(state == DaemonContribution.State.RUNNING){
+		if(daemonRunning){
 			try {				
 				String position = xmlRpcDaemonInterface.sendMessage("M44 S1");
 				positionValueLabel.setText(position.substring(1));
 
 				String force = xmlRpcDaemonInterface.sendMessage("M44 S3");
 				forceValueLabel.setText(force.substring(1));
+
+				gripperStatusLabel.setText("Greiferstatus: verbunden");
 			} catch(Exception e){
 				System.err.println("Error while updating position and force:\n"+e.toString());
+				gripperStatusLabel.setText("Greiferstatus: nicht verbunden");
 			}
+		} else {
+			gripperStatusLabel.setText("Greiferstatus: nicht verbunden");
 		}
 	}
 
