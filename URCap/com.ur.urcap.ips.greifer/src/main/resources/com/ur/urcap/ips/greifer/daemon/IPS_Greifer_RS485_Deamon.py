@@ -72,7 +72,7 @@ def test_connection():
 	return str(counter)
 
 
-log("MyDaemon daemon started")
+log("IPSGreifer daemon started")
 
 
 class MultithreadedSimpleXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):

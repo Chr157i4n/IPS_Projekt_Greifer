@@ -23,12 +23,12 @@ import java.awt.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MyDaemonProgramNodeContribution implements ProgramNodeContribution {
+public class IPSGreiferProgramNodeContribution implements ProgramNodeContribution {
 	private final DataModel model;
 	private final URCapAPI api;
 	private Timer uiTimer;
 
-	public MyDaemonProgramNodeContribution(URCapAPI api, DataModel model) {
+	public IPSGreiferProgramNodeContribution(URCapAPI api, DataModel model) {
 		this.api = api;
 		this.model = model;
 	}
@@ -120,7 +120,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			int maxForce = Integer.parseInt(getInstallation().model.get("max_force", "0"));
 			if(Integer.parseInt(motorCloseTextInput.getText()) > maxForce){
-				motorCloseTextInput.setText(maxForce.toString());
+				motorCloseTextInput.setText(String.valueOf(maxForce));
 			}
 			saveAllToModel();
 		}
@@ -300,7 +300,7 @@ public class MyDaemonProgramNodeContribution implements ProgramNodeContribution 
 		return -1;
 	}
 
-	private MyDaemonInstallationNodeContribution getInstallation() {
-		return api.getInstallationNode(MyDaemonInstallationNodeContribution.class);
+	private IPSGreiferInstallationNodeContribution getInstallation() {
+		return api.getInstallationNode(IPSGreiferInstallationNodeContribution.class);
 	}
 }

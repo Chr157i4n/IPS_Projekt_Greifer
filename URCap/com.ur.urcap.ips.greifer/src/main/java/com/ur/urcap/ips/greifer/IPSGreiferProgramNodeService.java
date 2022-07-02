@@ -7,9 +7,9 @@ import com.ur.urcap.api.domain.data.DataModel;
 
 import java.io.InputStream;
 
-public class MyDaemonProgramNodeService implements ProgramNodeService {
+public class IPSGreiferProgramNodeService implements ProgramNodeService {
 
-	public MyDaemonProgramNodeService() {
+	public IPSGreiferProgramNodeService() {
 	}
 
 	@Override
@@ -40,6 +40,6 @@ public class MyDaemonProgramNodeService implements ProgramNodeService {
 
 	@Override
 	public ProgramNodeContribution createNode(URCapAPI api, DataModel model) {
-		return new MyDaemonProgramNodeContribution(api, model);
+		return new IPSGreiferProgramNodeContribution(api, model);
 	}
 }

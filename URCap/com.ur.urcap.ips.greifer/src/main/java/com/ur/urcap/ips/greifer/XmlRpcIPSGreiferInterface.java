@@ -8,11 +8,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class XmlRpcMyDaemonInterface {
+public class XmlRpcIPSGreiferInterface {
 
 	private final XmlRpcClient client;
 
-	public XmlRpcMyDaemonInterface(String host, int port) {
+	public XmlRpcIPSGreiferInterface(String host, int port) {
 		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 		config.setEnabledForExtensions(true);
 		try {

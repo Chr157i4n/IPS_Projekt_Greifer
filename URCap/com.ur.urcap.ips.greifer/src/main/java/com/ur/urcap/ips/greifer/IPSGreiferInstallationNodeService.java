@@ -8,17 +8,17 @@ import java.io.InputStream;
 
 import com.ur.urcap.api.domain.data.DataModel;
 
-public class MyDaemonInstallationNodeService implements InstallationNodeService {
+public class IPSGreiferInstallationNodeService implements InstallationNodeService {
 
-	private final MyDaemonDaemonService daemonService;
+	private final IPSGreiferDaemonService daemonService;
 
-	public MyDaemonInstallationNodeService(MyDaemonDaemonService daemonService) {
+	public IPSGreiferInstallationNodeService(IPSGreiferDaemonService daemonService) {
 		this.daemonService = daemonService;
 	}
 
 	@Override
 	public InstallationNodeContribution createInstallationNode(URCapAPI api, DataModel model) {
-		return new MyDaemonInstallationNodeContribution(daemonService, model);
+		return new IPSGreiferInstallationNodeContribution(daemonService, model);
 	}
 
 	@Override

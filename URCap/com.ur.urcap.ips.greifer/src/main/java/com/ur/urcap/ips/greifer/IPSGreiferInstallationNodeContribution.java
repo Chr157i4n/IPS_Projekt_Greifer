@@ -15,19 +15,19 @@ import java.awt.EventQueue;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MyDaemonInstallationNodeContribution implements InstallationNodeContribution {
+public class IPSGreiferInstallationNodeContribution implements InstallationNodeContribution {
 
 	private static final String XMLRPC_VARIABLE = "ips_greifer_daemon";
 
 	public DataModel model;
-	private final MyDaemonDaemonService daemonService;
-	private XmlRpcMyDaemonInterface xmlRpcDaemonInterface;
+	private final IPSGreiferDaemonService daemonService;
+	private XmlRpcIPSGreiferInterface xmlRpcDaemonInterface;
 	private Timer uiTimer;
 
-	public MyDaemonInstallationNodeContribution(MyDaemonDaemonService daemonService, DataModel model) {
+	public IPSGreiferInstallationNodeContribution(IPSGreiferDaemonService daemonService, DataModel model) {
 		this.daemonService = daemonService;
 		this.model = model;
-		xmlRpcDaemonInterface = new XmlRpcMyDaemonInterface("127.0.0.1", 40405);
+		xmlRpcDaemonInterface = new XmlRpcIPSGreiferInterface("127.0.0.1", 40405);
 		applyDesiredDaemonStatus();
 	}
 
@@ -125,7 +125,7 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 
 	@Override
 	public void openView() {
-		System.out.println("Open View 1");
+		System.out.println("Open View");
 		enableDaemonButton.setText("Daemon starten");
 		disableDaemonButton.setText("Daemon stoppen");
 		sendMessageButton.setText("Sende Nachricht");
@@ -146,13 +146,17 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 				});
 			}
 		}, 0, 1000);
-		System.out.println("Open View 2");
 	}
 
 	private void updateUI() {
-		System.out.println("Update UI 1");
+		System.out.println("Update UI");
 		DaemonContribution.State state = DaemonContribution.State.RUNNING;
-		//DaemonContribution.State state = getDaemonState();
+		try {
+			state =  daemonService.getDaemon().getState();
+		} catch (Exception e) {
+			System.err.println("Error while getting daemon state");
+		}
+		
 
 		if (state == DaemonContribution.State.RUNNING) {
 			enableDaemonButton.setEnabled(false);
@@ -168,13 +172,13 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		String text = "";
 		switch (state) {
 		case RUNNING:
-			text = "My Daemon runs";
+			text = "Daemon läuft";
 			break;
 		case STOPPED:
-			text = "My Daemon stopped";
+			text = "Daemon gestoppt";
 			break;
 		case ERROR:
-			text = "My Daemon failed";
+			text = "Daemon fehler";
 			break;
 		}
 		daemonStatusLabel.setText(text);
@@ -190,8 +194,6 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 				System.err.println("Error while updating position and force:\n"+e.toString());
 			}
 		}
-
-		System.out.println("Update UI 2");
 	}
 
 	@Override
@@ -227,10 +229,6 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}).start();
 	}
 
-	private DaemonContribution.State getDaemonState(){
-		return daemonService.getDaemon().getState();
-	}
-
 	private Boolean isDaemonEnabled() {
 		return model.get("enabled", true); //This daemon is enabled by default
 	}
@@ -264,5 +262,5 @@ public class MyDaemonInstallationNodeContribution implements InstallationNodeCon
 		}
 	}
 
-	public XmlRpcMyDaemonInterface getXmlRpcDaemonInterface() {return xmlRpcDaemonInterface; }
+	public XmlRpcIPSGreiferInterface getXmlRpcDaemonInterface() {return xmlRpcDaemonInterface; }
 }

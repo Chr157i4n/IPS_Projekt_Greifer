@@ -19,8 +19,8 @@
             <directory>src</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <excludes>
-                <exclude>main/resources/com/ur/urcap/examples/mydaemon/impl/daemon/.gitignore</exclude>
-                <exclude>main/resources/com/ur/urcap/examples/mydaemon/impl/daemon/HelloWorld</exclude>
+                <exclude>main/resources/com/ur/urcap/ips/greifer/impl/daemon/.gitignore</exclude>
+                <exclude>main/resources/com/ur/urcap/ips/greifer/impl/daemon/HelloWorld</exclude>
             </excludes>
         </fileSet>
      
