@@ -227,21 +227,23 @@ public class IPSGreiferProgramNodeContribution implements ProgramNodeContributio
 			//writer.appendLine("popup(ips_greifer_return_value, \"ips_greifer_return_value\", False, False, blocking=True)");	
 		}
 		writer.appendLine("if ips_greifer_return_value == \"E10\":");
-		writer.appendLine("\tpopup(\"Greifer: Sensor Kommunikationsfehler\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"Greiferfehler \" + ips_greifer_return_value + \" : Sensor Kommunikationsfehler\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"E20\":");
-		writer.appendLine("\tpopup(\"Greifer: Befehl nicht verfügbar\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"Greiferfehler \" + ips_greifer_return_value + \" : Befehl nicht verfügbar\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"E30\":");
-		writer.appendLine("\tpopup(\"Greifer: Befehlsparameter fehlerhaft\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"Greiferfehler \" + ips_greifer_return_value + \" : Befehlsparameter fehlerhaft\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"W40\":");
-		writer.appendLine("\tpopup(\"Greifer: Position außerhalb von Limit\", \"Greifer Warnung\", True, False, blocking=True)");
+		writer.appendLine("\tpopup(\"Greiferwarnung \" + ips_greifer_return_value + \" : Position außerhalb von Limit\", \"Greifer Warnung\", True, False, blocking=True)");
 		writer.appendLine("elif str_at(ips_greifer_return_value,0) == \"E\":");
-		writer.appendLine("\tpopup(str_cat(\"Errorcode: \", ips_greifer_return_value), \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"Greiferfehler \" + ips_greifer_return_value + \" : unbekannter Fehler\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("elif str_at(ips_greifer_return_value,0) == \"W\":");
+		writer.appendLine("\tpopup(\"Greiferwarnung \" + ips_greifer_return_value + \" : unbekannte Warnung\", \"Greifer Warnung\", True, False, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"-1\":");
-		writer.appendLine("\tpopup(\"RS485: Fehlerhafte Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"RS485-Fehler: Fehlerhafte Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"-2\":");
-		writer.appendLine("\tpopup(\"RS485: Keine Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"RS485-Fehler: Keine Antwort\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("elif ips_greifer_return_value == \"-3\":");
-		writer.appendLine("\tpopup(\"RS485: Keine Nachricht\", \"Greifer Fehler\", False, True, blocking=True)");
+		writer.appendLine("\tpopup(\"RS485-Fehler: Keine Nachricht\", \"Greifer Fehler\", False, True, blocking=True)");
 		writer.appendLine("end");
 
 		// writer.writeChildren();
