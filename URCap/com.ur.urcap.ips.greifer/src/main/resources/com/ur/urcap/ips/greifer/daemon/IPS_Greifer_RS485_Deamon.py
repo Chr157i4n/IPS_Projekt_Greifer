@@ -44,7 +44,7 @@ def send_message(message):
 		log("return: \""+str(value)+"\"")
 		return value
 	else:
-		return "-3"
+		return "E60"
 
 def read_answer():
 	buffer = KEEPALIVE
@@ -55,10 +55,10 @@ def read_answer():
 		log(":"+str(buffer_stripped))
 	if(len(buffer) > 0 and buffer[-1] != "\n"):
 		log("INCOMPLETE ANSWER")
-		return "-1"
+		return "E40"
 	elif(buffer_stripped == ""):
 		log("NO ANSWER")
-		return "-2"
+		return "E50"
 	elif(buffer_stripped[0] == "E"):
 		log("ERROR")
 		return buffer_stripped

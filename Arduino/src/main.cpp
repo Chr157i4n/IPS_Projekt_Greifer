@@ -52,7 +52,7 @@ Error Codes:
 E10   -   Sensor communication error
 E20   -   command not available
 E30   -   parameter error
-W40   -   out of Bound warning
+W10   -   out of Bound warning
 
 */
 
@@ -178,7 +178,7 @@ void parseLine(String message)
       String move_amount_mm = parameters.substring(index_X+1, index_X_end);
       long return_value = move(mm_to_steps(move_amount_mm.toFloat()));
       if(return_value == -1){
-        rs485.sendWarning((String)"40");
+        rs485.sendWarning((String)"10");
       }else{
         rs485.sendAnswer((String)return_value);
       }
@@ -187,7 +187,7 @@ void parseLine(String message)
       String move_amount_steps = parameters.substring(index_S+1, index_S_end);
       int return_value = move(move_amount_steps.toInt());
       if(return_value == -1){
-        rs485.sendWarning((String)"40");
+        rs485.sendWarning((String)"10");
       }else{
         rs485.sendAnswer((String)return_value);
       }
@@ -201,7 +201,7 @@ void parseLine(String message)
       String move_amount_force = parameters.substring(index_F+1);
       float return_value = close(move_amount_force.toInt());
       if(return_value == -1){
-        rs485.sendWarning((String)"40");
+        rs485.sendWarning((String)"10");
       }else if(return_value == -2){
         rs485.sendError((String)"10");
       }else{
@@ -214,7 +214,7 @@ void parseLine(String message)
   {
     float return_value = open();
     if(return_value == -1){
-        rs485.sendWarning((String)"40");
+        rs485.sendWarning((String)"10");
     }else{
       rs485.sendAnswer((String)return_value);
     }

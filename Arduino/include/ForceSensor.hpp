@@ -3,6 +3,7 @@
 #include <Wire.h> //For I2C/SMBus
 
 #define FORCE_LEVER_RATIO 2.16667
+#define FORCE_CALIB 9.81*4/58
 
 
 class ForceSensor

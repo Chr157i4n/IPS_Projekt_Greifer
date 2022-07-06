@@ -11,7 +11,7 @@ float ForceSensor::getValue()
 {
     float force = getValueRaw();
     force = (float(force)-255)/512*450;
-    force = force/FORCE_LEVER_RATIO;
+    force = force/FORCE_LEVER_RATIO*FORCE_CALIB;
 
     return force;
 }
