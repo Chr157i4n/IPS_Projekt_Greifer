@@ -175,10 +175,14 @@ public class IPSGreiferInstallationNodeContribution implements InstallationNodeC
 		if(daemonRunning){
 			try {				
 				String position = xmlRpcDaemonInterface.sendMessage("M44 S1");
-				positionValueLabel.setText(position.substring(1));
+				if(position.substring(0,1) == "A") {
+					positionValueLabel.setText(position.substring(1));
+				}
 
 				String force = xmlRpcDaemonInterface.sendMessage("M44 S3");
-				forceValueLabel.setText(force.substring(1));
+				if(position.substring(0,1) == "A"){
+					forceValueLabel.setText(force.substring(1));
+				}
 
 				gripperStatusLabel.setText("Greiferstatus: verbunden");
 			} catch(Exception e){
