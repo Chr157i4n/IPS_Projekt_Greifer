@@ -7,11 +7,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class MyDaemonDaemonService implements DaemonService {
+public class IPSGreiferDaemonService implements DaemonService {
 
 	private DaemonContribution daemonContribution;
 
-	public MyDaemonDaemonService() {
+	public IPSGreiferDaemonService() {
 	}
 
 	@Override

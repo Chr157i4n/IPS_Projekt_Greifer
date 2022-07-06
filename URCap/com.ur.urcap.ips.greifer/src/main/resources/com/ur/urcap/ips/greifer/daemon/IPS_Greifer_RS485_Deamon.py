@@ -23,19 +23,16 @@ KEEPALIVE = "M113"
 
 counter = 0
 
-while(True):
-	try:
-		ser = serial.Serial (port=port, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=2.0, write_timeout=2.0,)
-		break
-	except:
-		log("could not open port: "+port)
-		#ser = None
+ser = serial.Serial (port=None, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8, stopbits=1, timeout=2.0, write_timeout=2.0)
+ser.port = port
 
 def init():
 	pass
 
 
 def send_message(message):
+	if (ser.isOpen() == False):
+		ser.open()
 	if str(message):
 		log("command: \""+str(message)+"\"")
 		if(ser==None):
@@ -47,7 +44,7 @@ def send_message(message):
 		log("return: \""+str(value)+"\"")
 		return value
 	else:
-		return "Error: No message set."
+		return "E60"
 
 def read_answer():
 	buffer = KEEPALIVE
@@ -58,10 +55,10 @@ def read_answer():
 		log(":"+str(buffer_stripped))
 	if(len(buffer) > 0 and buffer[-1] != "\n"):
 		log("INCOMPLETE ANSWER")
-		return "-1"
+		return "E40"
 	elif(buffer_stripped == ""):
 		log("NO ANSWER")
-		return "-2"
+		return "E50"
 	elif(buffer_stripped[0] == "E"):
 		log("ERROR")
 		return buffer_stripped
@@ -75,7 +72,7 @@ def test_connection():
 	return str(counter)
 
 
-log("MyDaemon daemon started")
+log("IPSGreifer daemon started")
 
 
 class MultithreadedSimpleXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):

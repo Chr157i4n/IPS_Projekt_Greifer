@@ -19,34 +19,41 @@
 	<body>
 		<h1>IPS Greifer Installation</h1>
 		<form>		
-			<input id="btnEnableDaemon" type="button" style="font-size: 18px;" />
-			<input id="btnDisableDaemon" type="button" style="font-size: 18px;" />
-			<div>&nbsp;</div>
-			<label id="lblDaemonStatus" style="width: 200px;">Daemonstatus</label>
-			<div>&nbsp;</div>
-			<input id="btnTestConnection" type="button" style="font-size: 18px;" />
-			<label id="lblTestConnection" style="width: 200px;">Antwort: </label>
-			<div>&nbsp;</div>
-			<br>
-			<label>Enter message:</label> 
-			<br>
-			<input id="txtFldSendMessage" type="text"/>
-			<br>
-			<br>
-			<input id="btnSendMessage" type="button" style="font-size: 18px;" />
-			<br>
-			<label id="lblSendMessage" style="width: 500px;">Antwort: </label>
-
-			<div>&nbsp;</div>
-			<input id="btnMotorOn" type="button" style="font-size: 18px;" />
-			<input id="btnMotorOff" type="button" style="font-size: 18px;" />
-			<br>
-			<br>
+			<input id="enable_daemon" type="button" style="font-size: 18px;" />
+			<input id="disable_daemon" type="button" style="font-size: 18px;" />
+			<br/>
+			<label id="daemon_status" style="width: 500px;">Daemonstatus:  ---</label>
+			<br/>
+			<label id="gripper_status" style="width: 500px;">Greiferstatus: ---</label>
+			<br/>
+			<p>&nbsp;</p>
+			<br/>
+			<label>Nachricht:</label> 
+			<br/>
+			<input id="send_message_txtfld" type="text"/>
+			<br/>
+			<input id="send_message_btn" type="button" style="font-size: 18px;" />
+			<br/>
+			<label id="send_message_lbl" style="width: 500px;">Antwort: </label>
+			<br/>
+			<p>&nbsp;</p> 
+			<br/>
+			<label>maximale Kraft [N]:</label> 
+			<br/>
+			<input id="max_force" type="number"/>
+			<br/>
+			<p>&nbsp;</p> 
+			<br/>
+			<input id="motor_on" type="button" style="font-size: 18px;" />
+			<input id="motor_off" type="button" style="font-size: 18px;" />
+			<br/>
+			<p>&nbsp;</p> 
+			<br/>
 			<label>Position:</label> 
-			<label id="lblPositionValue">---</label> 
-			<br>
+			<label id="position_value">---</label> 
+			<br/>
 			<label>Kraft:</label> 
-			<label id="lblForceValue">---</label> 
+			<label id="force_value">---</label> 
 
 
 		</form>
