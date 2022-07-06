@@ -23,6 +23,7 @@ public class IPSGreiferInstallationNodeContribution implements InstallationNodeC
 	private final IPSGreiferDaemonService daemonService;
 	private XmlRpcIPSGreiferInterface xmlRpcDaemonInterface;
 	private Timer uiTimer;
+	private boolean gripperConnected = false;
 
 	public IPSGreiferInstallationNodeContribution(IPSGreiferDaemonService daemonService, DataModel model) {
 		this.daemonService = daemonService;
@@ -136,6 +137,20 @@ public class IPSGreiferInstallationNodeContribution implements InstallationNodeC
 		motorOffButton.setText("Motor Aus");
 		maxForceTextField.setText(model.get("max_force", "0").toString());
 
+		try {				
+			String position = xmlRpcDaemonInterface.sendMessage("M44 S1");
+			if(position.charAt(0) == 'A') {
+				gripperConnected = true;
+			} else {
+				gripperConnected = false;
+				forceValueLabel.setText("---");
+				positionValueLabel.setText("---");
+			}
+		} catch(Exception e){
+			gripperConnected = false;
+		}
+		
+
 		//UI updates from non-GUI threads must use EventQueue.invokeLater (or SwingUtilities.invokeLater)
 		uiTimer = new Timer(true);
 		uiTimer.schedule(new TimerTask() {
@@ -165,22 +180,22 @@ public class IPSGreiferInstallationNodeContribution implements InstallationNodeC
 		if (daemonRunning) {
 			enableDaemonButton.setEnabled(false);
 			disableDaemonButton.setEnabled(true);
-			daemonStatusLabel.setText("Daemonstatus:  läuft");
+			daemonStatusLabel.setText("Daemonstatus: läuft");
 		} else {
 			enableDaemonButton.setEnabled(true);
 			disableDaemonButton.setEnabled(false);
-			daemonStatusLabel.setText("Daemonstatus:  läuft nicht");
+			daemonStatusLabel.setText("Daemonstatus: läuft nicht");
 		}
 
-		if(daemonRunning){
+		if(daemonRunning && gripperConnected){
 			try {				
 				String position = xmlRpcDaemonInterface.sendMessage("M44 S1");
-				if(position.substring(0,1) == "A") {
+				if(position.charAt(0) == 'A') {
 					positionValueLabel.setText(position.substring(1));
 				}
 
 				String force = xmlRpcDaemonInterface.sendMessage("M44 S3");
-				if(position.substring(0,1) == "A"){
+				if(position.charAt(0) == 'A'){
 					forceValueLabel.setText(force.substring(1));
 				}
 
