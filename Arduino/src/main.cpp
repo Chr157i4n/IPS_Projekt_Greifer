@@ -226,13 +226,11 @@ void parseLine(String message)
   {
     motorDriver.setMotorEnabled(true);
     rs485.sendAnswer((String)"0");
-  }
-  else if(command == "M18") // disable Motor Output
+  }else if(command == "M18") // disable Motor Output
   {
     motorDriver.setMotorEnabled(false);
     rs485.sendAnswer((String)"0");
-  }
-  else if(command == "M42") // Switch I/O pin
+  }else if(command == "M42") // Switch I/O pin
   {
     int index_P = parameters.indexOf('P');
     int index_P_end = parameters.indexOf(' ', index_P);
@@ -254,8 +252,7 @@ void parseLine(String message)
 
     digitalWrite(pin, state);
     rs485.sendAnswer((String)"0");
-  }
-  else if(command == "M43") // Read I/O pin
+  }else if(command == "M43") // Read I/O pin
   {
     int index_P = parameters.indexOf('P');
     int index_P_end = parameters.indexOf(' ', index_P);
@@ -265,8 +262,7 @@ void parseLine(String message)
     bool state = digitalRead(pin.toInt());
     rs485.sendAnswer((String)state);
     //Serial.println((String)"A"+state);
-  }
-  else if(command == "M44") // Read Sensor value
+  }else if(command == "M44") // Read Sensor value
   {
     int index_S = parameters.indexOf('S');
     int index_S_end = parameters.indexOf(' ', index_S);
@@ -305,8 +301,7 @@ void parseLine(String message)
   }else if(command == "M1337") // Test
   {
     rs485.sendAnswer((String)"leet");
-  }
-  else
+  }else
   {
     rs485.sendError("20");
     //Serial.println("Command not available");
