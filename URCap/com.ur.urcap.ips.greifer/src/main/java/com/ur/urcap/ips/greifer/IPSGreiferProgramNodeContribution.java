@@ -2,7 +2,12 @@ package com.ur.urcap.ips.greifer;
 
 import com.ur.urcap.api.contribution.ProgramNodeContribution;
 import com.ur.urcap.api.domain.URCapAPI;
+import com.ur.urcap.api.domain.ProgramAPI;
 import com.ur.urcap.api.domain.data.DataModel;
+import com.ur.urcap.api.domain.variable.GlobalVariable;
+import com.ur.urcap.api.domain.variable.Variable;
+import com.ur.urcap.api.domain.variable.VariableException;
+import com.ur.urcap.api.domain.variable.VariableFactory;
 import com.ur.urcap.api.domain.script.ScriptWriter;
 import com.ur.urcap.api.ui.annotation.Input;
 import com.ur.urcap.api.ui.annotation.Label;
@@ -27,10 +32,14 @@ public class IPSGreiferProgramNodeContribution implements ProgramNodeContributio
 	private final DataModel model;
 	private final URCapAPI api;
 	private Timer uiTimer;
+	private final ProgramAPI programAPI;
+	private final VariableFactory variableFactory;
 
 	public IPSGreiferProgramNodeContribution(URCapAPI api, DataModel model) {
 		this.api = api;
 		this.model = model;
+		this.programAPI = api.getProgramAPIProvider().getProgramAPI();
+		variableFactory = programAPI.getVariableModel().getVariableFactory();
 	}
 
 	@Img(id = "logo")
@@ -122,6 +131,15 @@ public class IPSGreiferProgramNodeContribution implements ProgramNodeContributio
 			if(Integer.parseInt(motorCloseTextInput.getText()) > maxForce){
 				motorCloseTextInput.setText(String.valueOf(maxForce));
 			}
+			saveAllToModel();
+		}
+	}
+
+	@Input(id = "return_var_save_as")
+	private InputTextField returnVarSaveAs;
+
+	public void onTextChange4(InputEvent event){
+		if (event.getEventType() == InputEvent.EventType.ON_CHANGE) {
 			saveAllToModel();
 		}
 	}
@@ -246,6 +264,14 @@ public class IPSGreiferProgramNodeContribution implements ProgramNodeContributio
 		writer.appendLine("\tpopup(\"Greiferwarnung \" + ips_greifer_return_value + \" : unbekannte Warnung\", \"Greifer Warnung\", True, False, blocking=True)");
 		writer.appendLine("end");
 
+		if(getFromModel("returnVarSaveAs", "")!=""){
+			writer.appendLine("if str_at(ips_greifer_return_value,0) == \"A\" :");
+			writer.assign("global "+getFromModel("returnVarSaveAs"), "to_num(str_sub(ips_greifer_return_value, 1))");
+			writer.appendLine("else:");
+			writer.assign("global "+getFromModel("returnVarSaveAs"), "-666");
+			writer.appendLine("end");
+		}
+
 		// writer.writeChildren();
 	}
 
@@ -276,6 +302,7 @@ public class IPSGreiferProgramNodeContribution implements ProgramNodeContributio
 		motorPowerSelect.selectItemAtIndex(Integer.parseInt(getFromModel("motorPowerSelect", "0")));
 		motorDriveTextInput.setText(getFromModel("motorDriveTextInput", "0"));
 		motorCloseTextInput.setText(getFromModel("motorCloseTextInput", "0"));
+		returnVarSaveAs.setText(getFromModel("returnVarSaveAs", ""));
 		
 		inputRadioButtonArray[Integer.parseInt(getFromModel("command_select_RadioButton", "0"))].setSelected();
 	}
@@ -287,7 +314,10 @@ public class IPSGreiferProgramNodeContribution implements ProgramNodeContributio
 		setToModel("motorPowerSelect", Integer.toString(motorPowerSelect.getSelectedIndex()));
 		setToModel("motorDriveTextInput", motorDriveTextInput.getText());
 		setToModel("motorCloseTextInput", motorCloseTextInput.getText());
-				
+		
+		model.set("returnVarSaveAs", returnVarSaveAs.getText());
+		
+
 		setToModel("command_select_RadioButton", Integer.toString(getSelectedRadioButtonIndex()));
 		}
 	}
